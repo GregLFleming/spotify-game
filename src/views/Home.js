@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react'
+import Header from '../components/Header.jsx'
+import Card from '../components/Card.jsx'
 import fetchFromSpotify, { request } from '../services/api'
+import Container from '../components/Container.jsx'
+import Button from '../components/Button.jsx'
+import Select from '../components/Select.jsx'
 
 const AUTH_ENDPOINT =
   'https://nuod0t2zoe.execute-api.us-east-2.amazonaws.com/FT-Classroom/spotify-auth-token'
@@ -56,18 +61,40 @@ const Home = () => {
 
   return (
     <div>
-      Genre:
-      <select
+      <Container>
+      <Header>Welcome To Whos-Who</Header>
+      <Card>
+      <Select
         value={selectedGenre}
         onChange={event => setSelectedGenre(event.target.value)}
       >
-        <option value='' />
+        <option value='' >Select Your Genre</option>
         {genres.map(genre => (
           <option key={genre} value={genre}>
             {genre}
           </option>
         ))}
-      </select>
+      </Select>
+      <Select>
+        <option value={''}>Artist Choices</option>
+        
+          <option>
+            
+          </option>
+        
+      </Select>
+      <Select>
+        <option value={''}> Number of Songs </option>
+        
+          <option>
+            
+          </option>
+        
+      </Select>
+
+      <Button>START</Button>
+      </Card>
+      </Container>
     </div>
   )
 }
