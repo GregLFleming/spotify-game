@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react'
 import Header from '../components/Header.jsx'
 import Card from '../components/Card.jsx'
-import fetchFromSpotify, { request } from '../services/api'
 import Container from '../components/Container.jsx'
 import Button from '../components/Button.jsx'
 import Select from '../components/Select.jsx'
 
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
-import { genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom } from '../recoil/atoms' //individual value you need access to
-import { loadArtists, loadGenres } from '../services/SpotifyQuery.js'
+import { genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom, songsToChooseFromAtom } from '../recoil/atoms' //individual value you need access to
+import { loadGenres, loadSongs, parseSongs } from '../services/SpotifyQuery.js'
+import { request } from '../services/api'
 
 
 const AUTH_ENDPOINT =
@@ -29,6 +29,7 @@ const Home = () => {
   const [authLoading, setAuthLoading] = useRecoilState(tokenAuthorizationLoadingAtom)
   const [configLoading, setConfigLoading] = useRecoilState(configLoadingAtom)
   const [token, setToken] = useRecoilState(tokenAtom)
+  const [songs, setSongs] = useRecoilState(songsToChooseFromAtom)
 
   useEffect(() => {
     setAuthLoading(true)
@@ -40,7 +41,12 @@ const Home = () => {
         console.log('Token found in localstorage')
         setAuthLoading(false)
         setToken(storedToken.value)
-        loadGenres(storedToken.value)
+
+        //problem is returns promise and loading var doesn't wait
+        //setConfigLoading(false)
+        loadGenres(storedToken.value, setGenres)
+        //setConfigLoading(false)
+        parseSongs(loadSongs(storedToken.value, "rock"), setSongs)
         return
       }
     }
@@ -53,7 +59,7 @@ const Home = () => {
       localStorage.setItem(TOKEN_KEY, JSON.stringify(newToken))
       setAuthLoading(false)
       setToken(newToken.value)
-      loadGenres(newToken.value)
+      loadGenres(newToken.value, setConfigLoading, setGenres)
     })
   }, [])
 
@@ -64,41 +70,40 @@ const Home = () => {
   return (
     <div>
       <Container>
-      <Header>Welcome To Whos-Who</Header>
-      <Card>
-      <Select
-        value={selectedGenre}
-        onChange={event => {
-          setSelectedGenre(event.target.value)
-          loadArtists(token)
-        }}
-      >
-        <option value='' >Select Your Genre</option>
-        {genres.map(genre => (
-          <option key={genre} value={genre}>
-            {genre}
-          </option>
-        ))}
-      </Select>
-      <Select>
-        <option value={''}>Artist Choices</option>
-        
-          <option>
-            
-          </option>
-        
-      </Select>
-      <Select>
-        <option value={''}> Number of Songs </option>
-        
-          <option>
-            
-          </option>
-        
-      </Select>
+        <Header>Welcome To Whos-Who</Header>
+        <Card>
+          <Select
+            value={selectedGenre}
+            onChange={event => {
+              setSelectedGenre(event.target.value)
+            }}
+          >
+            <option value='' >Select Your Genre</option>
+            {genres.map(genre => (
+              <option key={genre} value={genre}>
+                {genre}
+              </option>
+            ))}
+          </Select>
+          <Select value={songs}>
+            <option value='' >Artist Choices</option>
+            {songs.map(song => (
+              <option key={song.name} value={song}>
+                {song.name}
+              </option>
+            ))}
+          </Select>
+          <Select>
+            <option value={''}> Number of Songs </option>
 
-      <Button>START</Button>
-      </Card>
+            <option>
+
+            </option>
+
+          </Select>
+
+          <Button>START</Button>
+        </Card>
       </Container>
     </div>
   )
