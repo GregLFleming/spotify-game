@@ -1,8 +1,8 @@
 import React from 'react'
-import Button from '../components/Button'
-import Card from '../components/Card'
-import Container from '../components/Container'
-import Header from '../components/Header'
+import Button from '../components/Button.jsx'
+import Card from '../components/Card.jsx'
+import Container from '../components/Container.jsx'
+import Header from '../components/Header.jsx'
 
 const Game = () => {
   return (
