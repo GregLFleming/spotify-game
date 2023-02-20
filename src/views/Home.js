@@ -1,5 +1,14 @@
+<<<<<<< HEAD:src/components/Home.js
 import React, { useEffect } from 'react'
+=======
+import React, { useEffect, useState } from 'react'
+import Header from '../components/Header.jsx'
+import Card from '../components/Card.jsx'
+>>>>>>> integration:src/views/Home.js
 import fetchFromSpotify, { request } from '../services/api'
+import Container from '../components/Container.jsx'
+import Button from '../components/Button.jsx'
+import Select from '../components/Select.jsx'
 
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
 import { genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom } from '../recoil/atoms' //individual value you need access to
@@ -68,18 +77,40 @@ const Home = () => {
 
   return (
     <div>
-      Genre:
-      <select
+      <Container>
+      <Header>Welcome To Whos-Who</Header>
+      <Card>
+      <Select
         value={selectedGenre}
         onChange={event => setSelectedGenre(event.target.value)}
       >
-        <option value='' />
+        <option value='' >Select Your Genre</option>
         {genres.map(genre => (
           <option key={genre} value={genre}>
             {genre}
           </option>
         ))}
-      </select>
+      </Select>
+      <Select>
+        <option value={''}>Artist Choices</option>
+        
+          <option>
+            
+          </option>
+        
+      </Select>
+      <Select>
+        <option value={''}> Number of Songs </option>
+        
+          <option>
+            
+          </option>
+        
+      </Select>
+
+      <Button>START</Button>
+      </Card>
+      </Container>
     </div>
   )
 }
