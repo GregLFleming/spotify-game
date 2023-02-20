@@ -39,8 +39,8 @@ export const genreSelectedAtom = atom({
     default: ''
 });
 
-export const qtyArtistChoicesAtom = atom({
-    key: 'qtyArtistChoices',
+export const qtyArtistsChosenAtom = atom({
+    key: 'qtyArtistsChosen',
     default: 2
 });
 
@@ -63,4 +63,9 @@ export const livesRemainingAtom = atom({
 export const secondsRemainingAtom = atom({
     key: 'secondsRemaining',
     default: 30
+});
+
+export const songToGuessAtom = atom({
+    key: 'songToGuess',
+    default: {}
 });
