@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import fetchFromSpotify, { request } from '../services/api'
 
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
@@ -20,9 +20,9 @@ const Home = () => {
   //---------Recoil State Storage---------\\
   const [genres, setGenres] = useRecoilState(genresToChooseFromAtom)
   const [selectedGenre, setSelectedGenre] = useRecoilState(genreSelectedAtom)
-  const [authLoading, setAuthLoading] = useState(tokenAuthorizationLoadingAtom)
-  const [configLoading, setConfigLoading] = useState(configLoadingAtom)
-  const [token, setToken] = useState(tokenAtom)
+  const [authLoading, setAuthLoading] = useRecoilState(tokenAuthorizationLoadingAtom)
+  const [configLoading, setConfigLoading] = useRecoilState(configLoadingAtom)
+  const [token, setToken] = useRecoilState(tokenAtom)
 
   const loadGenres = async t => {
     setConfigLoading(true)
