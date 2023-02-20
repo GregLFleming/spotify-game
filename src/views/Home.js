@@ -8,6 +8,7 @@ import Select from '../components/Select.jsx'
 
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
 import { genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom } from '../recoil/atoms' //individual value you need access to
+import { loadArtists, loadGenres } from '../services/SpotifyQuery.js'
 
 
 const AUTH_ENDPOINT =
@@ -28,17 +29,6 @@ const Home = () => {
   const [authLoading, setAuthLoading] = useRecoilState(tokenAuthorizationLoadingAtom)
   const [configLoading, setConfigLoading] = useRecoilState(configLoadingAtom)
   const [token, setToken] = useRecoilState(tokenAtom)
-
-  const loadGenres = async t => {
-    setConfigLoading(true)
-    const response = await fetchFromSpotify({
-      token: t,
-      endpoint: 'recommendations/available-genre-seeds'
-    })
-    console.log(response)
-    setGenres(response.genres)
-    setConfigLoading(false)
-  }
 
   useEffect(() => {
     setAuthLoading(true)
@@ -78,7 +68,10 @@ const Home = () => {
       <Card>
       <Select
         value={selectedGenre}
-        onChange={event => setSelectedGenre(event.target.value)}
+        onChange={event => {
+          setSelectedGenre(event.target.value)
+          loadArtists(token)
+        }}
       >
         <option value='' >Select Your Genre</option>
         {genres.map(genre => (
