@@ -1,45 +1,66 @@
 import { atom } from 'recoil';
 
 //---------Spotify Fetch Storage---------\\
-export const songsToChooseFrom = atom({
+export const songsToChooseFromAtom = atom({
     key: 'songsToChooseFrom',
     default: []
 });
 
-export const artistsToChooseFrom = atom({
+export const artistsToChooseFromAtom = atom({
     key: 'artistsToChooseFrom',
     default: []
 });
 
+export const genresToChooseFromAtom = atom({
+    key: 'genresToChooseFrom',
+    default: []
+});
+
+export const tokenAtom = atom({
+    key: 'token',
+    default: ''
+})
+
+//---------Asynchronous Load Status---------\\
+export const tokenAuthorizationLoadingAtom = atom({
+    key: 'tokenAuthorizationLoading',
+    default: false
+})
+
+export const configLoadingAtom = atom({
+    key: 'configLoading',
+    default: false
+})
+
 
 //---------User Input Storage---------\\
-export const genreSelected = atom({
+export const genreSelectedAtom = atom({
     key: 'genre',
     default: ''
 });
 
-export const qtyArtistChoices = atom({
+export const qtyArtistChoicesAtom = atom({
     key: 'qtyArtistChoices',
     default: 2
 });
 
-export const qtySongs = atom({
+export const qtySongsAtom = atom({
     key: 'qtySongs',
     default: 1
 });
 
 //---------App Generated Storage---------\\
-export const roundNumber = atom({
+export const roundNumberAtom = atom({
     key: 'roundNumber',
     default: 1
 });
 
-export const livesRemaining = atom({
+export const livesRemainingAtom = atom({
     key: 'livesRemaining',
     default: 1
 });
 
-export const secondsRemaining = atom({
+export const secondsRemainingAtom = atom({
     key: 'secondsRemaining',
     default: 30
 });
