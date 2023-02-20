@@ -7,7 +7,7 @@ import Button from '../components/Button.jsx'
 import Select from '../components/Select.jsx'
 
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
-import { qtySongsAtom, qtyArtistChoiceAtom, genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom } from '../recoil/atoms' //individual value you need access to
+import { qtySongsAtom, qtyArtistsChosenAtom, genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom } from '../recoil/atoms' //individual value you need access to
 import { NavLink } from 'react-router-dom'
 
 
@@ -29,7 +29,7 @@ const Home = () => {
   const [authLoading, setAuthLoading] = useRecoilState(tokenAuthorizationLoadingAtom)
   const [configLoading, setConfigLoading] = useRecoilState(configLoadingAtom)
   const [token, setToken] = useRecoilState(tokenAtom)
-  const [qtyArtistsChoice, setQtyArtistsChoice] = useRecoilState(qtyArtistChoiceAtom)
+  const [qtyArtistsChosen, setQtyArtistsChosen] = useRecoilState(qtyArtistsChosenAtom)
   const [qtySongs, setQtySongs] = useRecoilState(qtySongsAtom )
   
 
@@ -93,8 +93,8 @@ const Home = () => {
             ))}
           </Select>
           <Select
-            value={qtyArtistsChoice}
-            onChange={event => setQtyArtistsChoice(event.target.value)}
+            value={qtyArtistsChosen}
+            onChange={event => setQtyArtistsChosen(event.target.value)}
           >
             <option value='2' disabled>Artist Choices</option>
             <option>2</option>
