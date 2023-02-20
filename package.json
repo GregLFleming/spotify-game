@@ -30,6 +30,7 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-router-dom": "^5.1.2",
+    "recoil": "^0.7.6",
     "regenerator-runtime": "^0.13.9",
     "styled-components": "^5.0.0",
     "whatwg-fetch": "^3.0.0"

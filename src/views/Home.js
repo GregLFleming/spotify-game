@@ -1,21 +1,37 @@
+<<<<<<< HEAD:src/components/Home.js
+import React, { useEffect } from 'react'
+=======
 import React, { useEffect, useState } from 'react'
 import Header from '../components/Header.jsx'
 import Card from '../components/Card.jsx'
+>>>>>>> integration:src/views/Home.js
 import fetchFromSpotify, { request } from '../services/api'
 import Container from '../components/Container.jsx'
 import Button from '../components/Button.jsx'
 import Select from '../components/Select.jsx'
+
+import { useRecoilState } from 'recoil' //needed to manage state with recoil
+import { genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom } from '../recoil/atoms' //individual value you need access to
+
 
 const AUTH_ENDPOINT =
   'https://nuod0t2zoe.execute-api.us-east-2.amazonaws.com/FT-Classroom/spotify-auth-token'
 const TOKEN_KEY = 'whos-who-access-token'
 
 const Home = () => {
-  const [genres, setGenres] = useState([])
-  const [selectedGenre, setSelectedGenre] = useState('')
-  const [authLoading, setAuthLoading] = useState(false)
-  const [configLoading, setConfigLoading] = useState(false)
-  const [token, setToken] = useState('')
+  //---------React State Storage---------\\
+  // const [genres, setGenres] = useState([])
+  // const [selectedGenre, setSelectedGenre] = useState('')
+  // const [authLoading, setAuthLoading] = useState(false)
+  // const [configLoading, setConfigLoading] = useState(false)
+  // const [token, setToken] = useState('')
+
+  //---------Recoil State Storage---------\\
+  const [genres, setGenres] = useRecoilState(genresToChooseFromAtom)
+  const [selectedGenre, setSelectedGenre] = useRecoilState(genreSelectedAtom)
+  const [authLoading, setAuthLoading] = useRecoilState(tokenAuthorizationLoadingAtom)
+  const [configLoading, setConfigLoading] = useRecoilState(configLoadingAtom)
+  const [token, setToken] = useRecoilState(tokenAtom)
 
   const loadGenres = async t => {
     setConfigLoading(true)
