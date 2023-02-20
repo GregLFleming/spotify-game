@@ -39,7 +39,7 @@ export const genreSelectedAtom = atom({
     default: ''
 });
 
-export const qtyArtistChoicesAtom = atom({
+export const qtyArtistChoiceAtom = atom({
     key: 'qtyArtistChoices',
     default: 2
 });

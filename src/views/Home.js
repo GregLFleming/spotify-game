@@ -7,7 +7,8 @@ import Button from '../components/Button.jsx'
 import Select from '../components/Select.jsx'
 
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
-import { genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom } from '../recoil/atoms' //individual value you need access to
+import { qtySongsAtom, qtyArtistChoiceAtom, genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom } from '../recoil/atoms' //individual value you need access to
+import { NavLink } from 'react-router-dom'
 
 
 const AUTH_ENDPOINT =
@@ -28,6 +29,10 @@ const Home = () => {
   const [authLoading, setAuthLoading] = useRecoilState(tokenAuthorizationLoadingAtom)
   const [configLoading, setConfigLoading] = useRecoilState(configLoadingAtom)
   const [token, setToken] = useRecoilState(tokenAtom)
+  const [qtyArtistsChoice, setQtyArtistsChoice] = useRecoilState(qtyArtistChoiceAtom)
+  const [qtySongs, setQtySongs] = useRecoilState(qtySongsAtom )
+  
+
 
   const loadGenres = async t => {
     setConfigLoading(true)
@@ -74,38 +79,39 @@ const Home = () => {
   return (
     <div>
       <Container>
-      <Header>Welcome To Whos-Who</Header>
-      <Card>
-      <Select
-        value={selectedGenre}
-        onChange={event => setSelectedGenre(event.target.value)}
-      >
-        <option value='' >Select Your Genre</option>
-        {genres.map(genre => (
-          <option key={genre} value={genre}>
-            {genre}
-          </option>
-        ))}
-      </Select>
-      <Select>
-        <option value={''}>Artist Choices</option>
-        
-          <option>
-            
-          </option>
-        
-      </Select>
-      <Select>
-        <option value={''}> Number of Songs </option>
-        
-          <option>
-            
-          </option>
-        
-      </Select>
-
-      <Button>START</Button>
-      </Card>
+        <Header>Welcome To Whos-Who</Header>
+        <Card>
+          <Select
+            value={selectedGenre}
+            onChange={event => setSelectedGenre(event.target.value)}
+          >
+            <option value='' disabled>Select Your Genre</option>
+            {genres.map(genre => (
+              <option key={genre} value={genre}>
+                {genre}
+              </option>
+            ))}
+          </Select>
+          <Select
+            value={qtyArtistsChoice}
+            onChange={event => setQtyArtistsChoice(event.target.value)}
+          >
+            <option value='2' disabled>Artist Choices</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+          </Select>
+          <Select
+          value={qtySongs}
+          onChange={event => setQtySongs(event.target.value)}
+          >
+            <option value='1' disabled> Number of Songs </option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+          </Select>
+          <NavLink to = '/game'><Button>START</Button></NavLink>
+        </Card>
       </Container>
     </div>
   )
