@@ -1,10 +1,6 @@
-<<<<<<< HEAD:src/components/Home.js
 import React, { useEffect } from 'react'
-=======
-import React, { useEffect, useState } from 'react'
 import Header from '../components/Header.jsx'
 import Card from '../components/Card.jsx'
->>>>>>> integration:src/views/Home.js
 import fetchFromSpotify, { request } from '../services/api'
 import Container from '../components/Container.jsx'
 import Button from '../components/Button.jsx'
