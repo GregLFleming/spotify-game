@@ -1,17 +1,20 @@
-import React, { useState } from 'react'
+
+import React, {useRef, useEffect, useState} from 'react'
+
 import Button from '../components/Button.jsx'
 import Card from '../components/Card.jsx'
 import Container from '../components/Container.jsx'
 import Header from '../components/Header.jsx'
 import styled from "styled-components"
+
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
-import { qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom } from '../recoil/atoms'
+import { qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
 import fetchFromSpotify from '../services/api.js'
 import { async } from 'regenerator-runtime'
 import { initial } from 'lodash'
 
-const ARTIST_KEY = "artistKey"
 
+const ARTIST_KEY = "artistKey"
 //----------------Styling----------------\\
 const GridContainer = styled.div`{}
 margin: 20px auto;
@@ -35,7 +38,8 @@ const Game = () => {
   //---------Recoil State Storage---------\\
   const [livesRemaining, setLivesRemaining] = useRecoilState(livesRemainingAtom)
   const [roundNumber, setRoundNumber] = useRecoilState(roundNumberAtom)
-  const [secondsRemaining, setSecondsRemaining] = useRecoilState(secondsRemainingAtom)
+  const [timeRemaining, setTimeRemaining] = useRecoilState(timeRemainingAtom)
+  const [timeLimit, setTimeLimit] = useRecoilState(timeLimitAtom)
   const [qtyArtistsChosen, setQtyArtistsChosen] = useRecoilState(qtyArtistsChosenAtom)
   const [songToGuess, setSongToGuess] = useRecoilState(songToGuessAtom)
   const [chosenArtists, setChosenArtists] = useRecoilState(artistsToChooseFromAtom)
@@ -61,6 +65,44 @@ const Game = () => {
     )
   }
 
+//---------Timer Code---------\\
+const Ref = useRef(null);
+useEffect(() => {clearTimer(getDeadTime())}, []);
+
+const getTimeRemaining = (e) => {
+  const total = Date.parse(e) - Date.parse(new Date());
+  const seconds = Math.floor((total / 1000) % 60);
+  return {seconds};
+}
+
+const startTimer = (e) => {
+  let { seconds } = getTimeRemaining(e);
+  if (seconds >= 0) {
+    setTimeRemaining(seconds)
+  }
+}
+
+const clearTimer = (e) => {
+  setTimeRemaining(timeLimit);
+
+  if (Ref.current) clearInterval(Ref.current);
+  const id = setInterval(() => {
+    startTimer(e);
+  }, 1000)
+  Ref.current = id;
+}
+
+const getDeadTime = () => {
+  let deadline = new Date();
+  deadline.setSeconds(deadline.getSeconds() + timeLimit);
+  return deadline;
+}
+
+const onClickReset = () => {
+  clearTimer(getDeadTime());
+}
+
+  //---------JSX---------\\
   return (
     <div>
       <Container>
@@ -69,23 +111,14 @@ const Game = () => {
           <GridContainer>
             {[...Array(parseInt(qtyArtistsChosen)),]
               .map((value, index) => (
-                <GridItem>
-                  <Button style={{ margin: '10px' }} id={index} key={index}>ArtistNameHere {index + 1}</Button>
+                <GridItem key={index}>
+                  <Button style={{ margin: '10px' }} id={index}>ArtistNameHere {index + 1}</Button>
                 </GridItem>))}
           </GridContainer>
-
-          {/* <span style={{ display: 'flex', flexDirection: 'row' }}>
-            <Button style={{ margin: '25px' }}>Artist 1</Button>
-            <Button style={{ margin: '25px' }}>Artist 2</Button>
-          </span>
-          <span style={{ display: 'flex', flexDirection: 'row' }}>
-            <Button style={{ margin: '25px' }}>Artist 3</Button>
-            <Button style={{ margin: '25px' }}>Artist 4</Button>
-          </span> */}
-          <Button>PLAY SONG</Button>
+          <Button onClick = {onClickReset}>PLAY SONG</Button>
           <span style={{ display: 'flex', flexDirection: 'row' }}>
             <Button style={{ marginRight: '220px' }}>Lives Remaining: {livesRemaining}</Button>
-            <Button>Time remaining: {secondsRemaining} {qtyArtistsChosen}</Button>
+            <Button>Time remaining: {timeRemaining}</Button>
           </span>
         </Card>
       </Container>
