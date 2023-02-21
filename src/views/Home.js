@@ -38,7 +38,6 @@ const Home = () => {
   //---------Initial Loading---------\\
   useEffect(() => {
     setAuthLoading(true)
-
     const storedTokenString = localStorage.getItem(TOKEN_KEY)
     if (storedTokenString) {
       const storedToken = JSON.parse(storedTokenString)
@@ -51,8 +50,8 @@ const Home = () => {
         //setConfigLoading(false)
         loadGenres(storedToken.value, setGenres)
         //setConfigLoading(false)
-        parseSongs(loadSongs(storedToken.value, "rock"), setSongs)
-        parseArtists(loadArtists(storedToken.value, "rock"), setArtists)
+        parseSongs(loadSongs(storedToken.value, selectedGenre), setSongs)
+        parseArtists(loadArtists(storedToken.value, selectedGenre), setArtists)
         return
       }
     }
@@ -67,12 +66,22 @@ const Home = () => {
       setToken(newToken.value)
       loadGenres(newToken.value, setConfigLoading, setGenres)
     })
-  }, [])
+  }, [selectedGenre])
+
+  // useEffect(() => {
+  //   console.log("<---------------Current state--------------->")
+  //   // console.log(selectedGenre)
+  //   // console.log(qtyArtistsChosen)
+  //   // console.log(qtySongs)
+  //   // console.log(genres)
+  //   // console.log(songs)
+  //   // console.log(artists)
+  // },[selectedGenre, qtyArtistsChosen, qtySongs, genres, songs, artists])
+
 
   if (authLoading || configLoading) {
     return <div>Loading...</div>
   }
-  
 
   //---------JSX---------\\
   return (
