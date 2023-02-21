@@ -81,3 +81,8 @@ export const artistChoicesAtom = atom({
     key: 'artistChoices',
     default: []
 });
+
+export const gameStatusAtom = atom({
+    key: 'gameStatus',
+    default: ''
+});
