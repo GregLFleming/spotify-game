@@ -9,7 +9,7 @@ import { useRecoilState } from 'recoil' //needed to manage state with recoil
 import { loadArtists, loadGenres, loadSongs, parseArtists, parseSongs } from '../services/SpotifyQuery.js'
 import { request } from '../services/api'
 
-import { timeLimitAtom, timeRemainingAtom, qtySongsAtom, qtyArtistsChosenAtom, genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom } from '../recoil/atoms' //individual value you need access to
+import { artistsToChooseFromAtom, songsToChooseFromAtom, timeLimitAtom, timeRemainingAtom, qtySongsAtom, qtyArtistsChosenAtom, genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom } from '../recoil/atoms' //individual value you need access to
 import { NavLink } from 'react-router-dom'
 // import { startCountDownTimer } from '../services/helpers.js'
 
@@ -67,17 +67,6 @@ const Home = () => {
       loadGenres(newToken.value, setConfigLoading, setGenres)
     })
   }, [])
-
-  const loadGenres = async t => {
-    setConfigLoading(true)
-    const response = await fetchFromSpotify({
-      token: t,
-      endpoint: 'recommendations/available-genre-seeds'
-    })
-    console.log(response)
-    setGenres(response.genres)
-    setConfigLoading(false)
-  }
 
   if (authLoading || configLoading) {
     return <div>Loading...</div>
