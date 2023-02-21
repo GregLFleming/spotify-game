@@ -6,15 +6,14 @@ import Card from '../components/Card.jsx'
 import Container from '../components/Container.jsx'
 import Header from '../components/Header.jsx'
 import styled from "styled-components"
-import  {playSong}  from '../services/helpers';
+import  {displayNumArtists, playSong}  from '../services/helpers';
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
 import { qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
 import fetchFromSpotify from '../services/api.js'
+import { loadArtists, parseArtists } from '../services/SpotifyQuery.js'
 import { async } from 'regenerator-runtime'
 import { initial } from 'lodash'
 
-
-const ARTIST_KEY = "artistKey"
 //----------------Styling----------------\\
 const GridContainer = styled.div`{}
 margin: 20px auto;
@@ -43,27 +42,14 @@ const Game = () => {
   const [qtyArtistsChosen, setQtyArtistsChosen] = useRecoilState(qtyArtistsChosenAtom)
   const [songToGuess, setSongToGuess] = useRecoilState(songToGuessAtom)
   const [chosenArtists, setChosenArtists] = useRecoilState(artistsToChooseFromAtom)
+  const [artists, setArtists] = useRecoilState(artistsToChooseFromAtom)
 
-  const [config, setConfig] = useState({
-    retrievedArtists: Number.parseInt(
-      JSON.parse(localStorage.getItem(ARTIST_KEY))
-    )
+  useEffect(() => {
+    const artists = JSON.parse(localStorage.getItem('artists'))
+    if(artists){
+      setArtists(artists.items.name)
+    }
   })
-
-  const getArtists = async () => {
-    const artistRequest = await fetchFromSpotify({
-      token,
-      endpoint: `artists/${songToGuess.chosenArtists[0].id}`
-    });
-
-    const artistResponse = await fetchFromSpotify({
-      token,
-      endpoint: `artists/${songToGuess.chosenArtists[0].id}/related-artists`,
-    });
-    setChosenArtists(
-      randomizer(artistResponse.chosenArtists, config.retrievedArtists -1).map((a) => ({correct: false, a})).concat([{correct: true, artistRequest}]).sort(() => Math.random() -0.5)
-    )
-  }
 
 //---------Timer Code---------\\
 const Ref = useRef(null);
@@ -98,6 +84,7 @@ const getDeadTime = () => {
   return deadline;
 }
 
+
 const onClickReset = () => {
   clearTimer(getDeadTime());
 }
@@ -105,6 +92,7 @@ const handlePlaySong = (url) => {
   onClickReset()
   playSong(url)
 }
+
 
   //---------JSX---------\\
   return (
@@ -116,7 +104,14 @@ const handlePlaySong = (url) => {
             {[...Array(parseInt(qtyArtistsChosen)),]
               .map((value, index) => (
                 <GridItem key={index}>
-                  <Button style={{ margin: '10px' }} id={index}>ArtistNameHere {index + 1}</Button>
+                  {
+                    artists.map((artist, index) =>{
+                      return(
+                        <Button key={index} style={{ margin: '10px' }} id={index}>{artist}</Button>
+                      )
+                    })
+                  }
+                  {/* <div style={{ margin: '10px' }} id={index} value={artists.map(artist => artist)}>{[...Array(artists)].map((a, i) => <Button key={i}></Button>)}</div> */}
                 </GridItem>))}
           </GridContainer>
           <Button onClick = {handlePlaySong}>PLAY SONG</Button>

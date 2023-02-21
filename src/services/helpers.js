@@ -1,4 +1,7 @@
 import Howl from 'howler'
+import { useEffect } from 'react'
+import { artistsToChooseFromAtom, qtyArtistsChosenAtom, songToGuessAtom } from '../recoil/atoms'
+
 
 export function playSong(url) {
   const sound = new Howl({
