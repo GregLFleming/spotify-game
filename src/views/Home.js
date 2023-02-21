@@ -1,17 +1,20 @@
 import React, { useEffect, useRef } from 'react'
 import Header from '../components/Header.jsx'
 import Card from '../components/Card.jsx'
-import fetchFromSpotify, { request } from '../services/api'
 import Container from '../components/Container.jsx'
 import Button from '../components/Button.jsx'
 import Select from '../components/Select.jsx'
 
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
-import { timeLimitAtom, timeRemainingAtom, qtySongsAtom, qtyArtistsChosenAtom, genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom } from '../recoil/atoms' //individual value you need access to
+import { loadArtists, loadGenres, loadSongs, parseArtists, parseSongs } from '../services/SpotifyQuery.js'
+import { request } from '../services/api'
+
+import { artistsToChooseFromAtom, songsToChooseFromAtom, timeLimitAtom, timeRemainingAtom, qtySongsAtom, qtyArtistsChosenAtom, genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom } from '../recoil/atoms' //individual value you need access to
 import { NavLink } from 'react-router-dom'
 // import { startCountDownTimer } from '../services/helpers.js'
 
-//more changes
+
+//this is a change
 
 const AUTH_ENDPOINT =
   'https://nuod0t2zoe.execute-api.us-east-2.amazonaws.com/FT-Classroom/spotify-auth-token'
@@ -25,6 +28,8 @@ const Home = () => {
   const [authLoading, setAuthLoading] = useRecoilState(tokenAuthorizationLoadingAtom)
   const [configLoading, setConfigLoading] = useRecoilState(configLoadingAtom)
   const [token, setToken] = useRecoilState(tokenAtom)
+  const [songs, setSongs] = useRecoilState(songsToChooseFromAtom)
+  const [artists, setArtists] = useRecoilState(artistsToChooseFromAtom)
   const [qtyArtistsChosen, setQtyArtistsChosen] = useRecoilState(qtyArtistsChosenAtom)
   const [qtySongs, setQtySongs] = useRecoilState(qtySongsAtom )
   const [timeRemaining, setTimeRemaining] = useRecoilState(timeRemainingAtom)
@@ -41,7 +46,13 @@ const Home = () => {
         console.log('Token found in localstorage')
         setAuthLoading(false)
         setToken(storedToken.value)
-        loadGenres(storedToken.value)
+
+        //problem is returns promise and loading var doesn't wait
+        //setConfigLoading(false)
+        loadGenres(storedToken.value, setGenres)
+        //setConfigLoading(false)
+        parseSongs(loadSongs(storedToken.value, "rock"), setSongs)
+        parseArtists(loadArtists(storedToken.value, "rock"), setArtists)
         return
       }
     }
@@ -54,20 +65,9 @@ const Home = () => {
       localStorage.setItem(TOKEN_KEY, JSON.stringify(newToken))
       setAuthLoading(false)
       setToken(newToken.value)
-      loadGenres(newToken.value)
+      loadGenres(newToken.value, setConfigLoading, setGenres)
     })
   }, [])
-
-  const loadGenres = async t => {
-    setConfigLoading(true)
-    const response = await fetchFromSpotify({
-      token: t,
-      endpoint: 'recommendations/available-genre-seeds'
-    })
-    console.log(response)
-    setGenres(response.genres)
-    setConfigLoading(false)
-  }
 
   if (authLoading || configLoading) {
     return <div>Loading...</div>
@@ -82,15 +82,18 @@ const Home = () => {
         <Card>
           <Select
             value={selectedGenre}
+
             onChange={event => setSelectedGenre(event.target.value)}
           >
             <option value='' disabled>Select Your Genre</option>
+
             {genres.map(genre => (
               <option key={genre} value={genre}>
                 {genre}
               </option>
             ))}
           </Select>
+
           <Select
             value={qtyArtistsChosen}
             onChange={event => setQtyArtistsChosen(event.target.value)}
