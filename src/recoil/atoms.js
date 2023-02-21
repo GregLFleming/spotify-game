@@ -49,6 +49,13 @@ export const qtySongsAtom = atom({
     default: 1
 });
 
+export const timeLimitAtom = atom({
+    key: 'timeLimit',
+    default: 30
+});
+
+
+
 //---------App Generated Storage---------\\
 export const roundNumberAtom = atom({
     key: 'roundNumber',
@@ -60,9 +67,9 @@ export const livesRemainingAtom = atom({
     default: 1
 });
 
-export const secondsRemainingAtom = atom({
-    key: 'secondsRemaining',
-    default: 30
+export const timeRemainingAtom = atom({
+    key: 'timeRemaining',
+    default: '0'
 });
 
 export const songToGuessAtom = atom({
