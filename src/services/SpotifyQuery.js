@@ -34,12 +34,14 @@ export const parseSongs = (songListPromise, setSongs) => {
         //console.log("songs")
         //console.log(songList)
         //console.log(songList[0])
-        console.log(destructureSongs(songList[0]))
-        setSongs(songList)
+        //console.log(destructureSong(songList[0]))
+        let parsedList = songList.map(song => destructureSong(song))
+        //console.log(parsedList)
+        setSongs(parsedList)
     });
 }
 
-const destructureSongs = track => ({
+const destructureSong = track => ({
     trackName: track.name, artist: track.artists[0].name, url: track.preview_url
 })
 

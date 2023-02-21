@@ -88,8 +88,8 @@ const Home = () => {
           <Select value={songs}>
             <option value='' >Artist Choices</option>
             {songs.map(song => (
-              <option key={song.name} value={song}>
-                {song.name}
+              <option key={song.trackName} value={song}>
+                {song.trackName}
               </option>
             ))}
           </Select>
