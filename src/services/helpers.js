@@ -1,3 +1,13 @@
+import Howl from 'howler'
+
+export function playSong(url) {
+  const sound = new Howl({
+    src: [url],
+    preload: true,
+    html5: true,
+  })
+  sound.play()
+}
 export const checkUserGuess = (userGuess, correctAnswer) => {
     return(correctAnswer.artistName === userGuess)
 }

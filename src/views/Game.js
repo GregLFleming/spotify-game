@@ -6,7 +6,7 @@ import Card from '../components/Card.jsx'
 import Container from '../components/Container.jsx'
 import Header from '../components/Header.jsx'
 import styled from "styled-components"
-
+import  {playSong}  from '../services/helpers';
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
 import { qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
 import fetchFromSpotify from '../services/api.js'
@@ -101,6 +101,10 @@ const getDeadTime = () => {
 const onClickReset = () => {
   clearTimer(getDeadTime());
 }
+const handlePlaySong = (url) => {
+  onClickReset()
+  playSong(url)
+}
 
   //---------JSX---------\\
   return (
@@ -115,7 +119,7 @@ const onClickReset = () => {
                   <Button style={{ margin: '10px' }} id={index}>ArtistNameHere {index + 1}</Button>
                 </GridItem>))}
           </GridContainer>
-          <Button onClick = {onClickReset}>PLAY SONG</Button>
+          <Button onClick = {handlePlaySong}>PLAY SONG</Button>
           <span style={{ display: 'flex', flexDirection: 'row' }}>
             <Button style={{ marginRight: '220px' }}>Lives Remaining: {livesRemaining}</Button>
             <Button>Time remaining: {timeRemaining}</Button>
