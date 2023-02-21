@@ -13,9 +13,6 @@ import { artistsToChooseFromAtom, songsToChooseFromAtom, timeLimitAtom, timeRema
 import { NavLink } from 'react-router-dom'
 // import { startCountDownTimer } from '../services/helpers.js'
 
-///this is a change
-
-
 const AUTH_ENDPOINT =
   'https://nuod0t2zoe.execute-api.us-east-2.amazonaws.com/FT-Classroom/spotify-auth-token'
 const TOKEN_KEY = 'whos-who-access-token'

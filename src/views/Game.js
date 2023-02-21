@@ -6,9 +6,9 @@ import Card from '../components/Card.jsx'
 import Container from '../components/Container.jsx'
 import Header from '../components/Header.jsx'
 import styled from "styled-components"
-import  {playSong}  from '../services/helpers';
+import  { playSong, getRandomSong }  from '../services/helpers';
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
-import { qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
+import { artistChoicesAtom, songsToChooseFromAtom, qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
 import fetchFromSpotify from '../services/api.js'
 import { async } from 'regenerator-runtime'
 import { initial } from 'lodash'
@@ -43,6 +43,9 @@ const Game = () => {
   const [qtyArtistsChosen, setQtyArtistsChosen] = useRecoilState(qtyArtistsChosenAtom)
   const [songToGuess, setSongToGuess] = useRecoilState(songToGuessAtom)
   const [chosenArtists, setChosenArtists] = useRecoilState(artistsToChooseFromAtom)
+  const [songsToChooseFrom, setSongsToChooseFrom] = useRecoilState(songsToChooseFromAtom)
+  const [artistChoices, setArtistChoices] = useRecoilState(artistChoicesAtom)
+
 
   const [config, setConfig] = useState({
     retrievedArtists: Number.parseInt(
@@ -105,6 +108,13 @@ const handlePlaySong = (url) => {
   onClickReset()
   playSong(url)
 }
+  //---------Game Logic---------\\
+  const startNewRound = () =>{
+    setSongToGuess(getRandomSong(songsToChooseFrom))
+    // setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists))
+    clearTimer(getDeadTime());
+  }
+
 
   //---------JSX---------\\
   return (
