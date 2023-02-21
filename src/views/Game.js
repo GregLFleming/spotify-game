@@ -1,12 +1,12 @@
 
-import React, {useRef, useEffect, useState} from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 
 import Button from '../components/Button.jsx'
 import Card from '../components/Card.jsx'
 import Container from '../components/Container.jsx'
 import Header from '../components/Header.jsx'
 import styled from "styled-components"
-import  { playSong, getRandomSong }  from '../services/helpers';
+import { playSong, getRandomSong } from '../services/helpers';
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
 import { artistChoicesAtom, songsToChooseFromAtom, qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
 import fetchFromSpotify from '../services/api.js'
@@ -31,8 +31,8 @@ align-items:center;
 justify-content:center;
 `
 
-const randomizer = (arr, count) => arr.sort(() => Math.random() -0.5).slice(0, count);
-  
+const randomizer = (arr, count) => arr.sort(() => Math.random() - 0.5).slice(0, count);
+
 
 const Game = () => {
   //---------Recoil State Storage---------\\
@@ -64,55 +64,46 @@ const Game = () => {
       endpoint: `artists/${songToGuess.chosenArtists[0].id}/related-artists`,
     });
     setChosenArtists(
-      randomizer(artistResponse.chosenArtists, config.retrievedArtists -1).map((a) => ({correct: false, a})).concat([{correct: true, artistRequest}]).sort(() => Math.random() -0.5)
+      randomizer(artistResponse.chosenArtists, config.retrievedArtists - 1).map((a) => ({ correct: false, a })).concat([{ correct: true, artistRequest }]).sort(() => Math.random() - 0.5)
     )
   }
 
-//---------Timer Code---------\\
-const Ref = useRef(null);
-useEffect(() => {clearTimer(getDeadTime())}, []);
+  //---------Timer Code---------\\
+  const Ref = useRef(null);
+  useEffect(() => { timer.reset }, []);
 
-const getTimeRemaining = (e) => {
-  const total = Date.parse(e) - Date.parse(new Date());
-  const seconds = Math.floor((total / 1000) % 60);
-  return {seconds};
-}
+  const timer = {
+    start: function (timeOut) {
+      const total = Date.parse(timeOut) - Date.parse(new Date());
+      const seconds = Math.floor((total / 1000) % 60);
+      if (seconds >= 0) {
+        setTimeRemaining(seconds)
+      }
+    },
 
-const startTimer = (e) => {
-  let { seconds } = getTimeRemaining(e);
-  if (seconds >= 0) {
-    setTimeRemaining(seconds)
+    reset: function () {
+      let timeOut = new Date();
+      timeOut.setSeconds(timeOut.getSeconds() + timeLimit);
+      setTimeRemaining(timeLimit);
+
+      if (Ref.current) clearInterval(Ref.current);
+      const id = setInterval(() => {
+        this.start(timeOut, setTimeRemaining);
+      }, 1000)
+      Ref.current = id;
+    }
   }
-}
 
-const clearTimer = (e) => {
-  setTimeRemaining(timeLimit);
-
-  if (Ref.current) clearInterval(Ref.current);
-  const id = setInterval(() => {
-    startTimer(e);
-  }, 1000)
-  Ref.current = id;
-}
-
-const getDeadTime = () => {
-  let deadline = new Date();
-  deadline.setSeconds(deadline.getSeconds() + timeLimit);
-  return deadline;
-}
-
-const onClickReset = () => {
-  clearTimer(getDeadTime());
-}
-const handlePlaySong = (url) => {
-  onClickReset()
-  playSong(url)
-}
+  
+  const handlePlaySong = (url) => {
+    timer.reset()
+    // playSong(url)
+  }
   //---------Game Logic---------\\
-  const startNewRound = () =>{
+  const startNewRound = () => {
     setSongToGuess(getRandomSong(songsToChooseFrom))
     // setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists))
-    clearTimer(getDeadTime());
+    timer.reset();
   }
 
 
@@ -129,7 +120,7 @@ const handlePlaySong = (url) => {
                   <Button style={{ margin: '10px' }} id={index}>ArtistNameHere {index + 1}</Button>
                 </GridItem>))}
           </GridContainer>
-          <Button onClick = {handlePlaySong}>PLAY SONG</Button>
+          <Button onClick={handlePlaySong}>PLAY SONG</Button>
           <span style={{ display: 'flex', flexDirection: 'row' }}>
             <Button style={{ marginRight: '220px' }}>Lives Remaining: {livesRemaining}</Button>
             <Button>Time remaining: {timeRemaining}</Button>

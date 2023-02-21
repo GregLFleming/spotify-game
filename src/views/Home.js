@@ -29,7 +29,6 @@ const Home = () => {
   const [artists, setArtists] = useRecoilState(artistsToChooseFromAtom)
   const [qtyArtistsChosen, setQtyArtistsChosen] = useRecoilState(qtyArtistsChosenAtom)
   const [qtySongs, setQtySongs] = useRecoilState(qtySongsAtom )
-  const [timeRemaining, setTimeRemaining] = useRecoilState(timeRemainingAtom)
   const [timeLimit, setTimeLimit] = useRecoilState(timeLimitAtom)
   
   //---------Initial Loading---------\\
