@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import Header from '../components/Header.jsx'
 import Card from '../components/Card.jsx'
 import Container from '../components/Container.jsx'
@@ -6,9 +6,13 @@ import Button from '../components/Button.jsx'
 import Select from '../components/Select.jsx'
 
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
-import { genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom, songsToChooseFromAtom, artistsToChooseFromAtom } from '../recoil/atoms' //individual value you need access to
 import { loadArtists, loadGenres, loadSongs, parseArtists, parseSongs } from '../services/SpotifyQuery.js'
 import { request } from '../services/api'
+
+import { timeLimitAtom, timeRemainingAtom, qtySongsAtom, qtyArtistsChosenAtom, genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom } from '../recoil/atoms' //individual value you need access to
+import { NavLink } from 'react-router-dom'
+// import { startCountDownTimer } from '../services/helpers.js'
+
 
 
 const AUTH_ENDPOINT =
@@ -16,12 +20,6 @@ const AUTH_ENDPOINT =
 const TOKEN_KEY = 'whos-who-access-token'
 
 const Home = () => {
-  //---------React State Storage---------\\
-  // const [genres, setGenres] = useState([])
-  // const [selectedGenre, setSelectedGenre] = useState('')
-  // const [authLoading, setAuthLoading] = useState(false)
-  // const [configLoading, setConfigLoading] = useState(false)
-  // const [token, setToken] = useState('')
 
   //---------Recoil State Storage---------\\
   const [genres, setGenres] = useRecoilState(genresToChooseFromAtom)
@@ -31,7 +29,12 @@ const Home = () => {
   const [token, setToken] = useRecoilState(tokenAtom)
   const [songs, setSongs] = useRecoilState(songsToChooseFromAtom)
   const [artists, setArtists] = useRecoilState(artistsToChooseFromAtom)
-
+  const [qtyArtistsChosen, setQtyArtistsChosen] = useRecoilState(qtyArtistsChosenAtom)
+  const [qtySongs, setQtySongs] = useRecoilState(qtySongsAtom )
+  const [timeRemaining, setTimeRemaining] = useRecoilState(timeRemainingAtom)
+  const [timeLimit, setTimeLimit] = useRecoilState(timeLimitAtom)
+  
+  //---------Initial Loading---------\\
   useEffect(() => {
     setAuthLoading(true)
 
@@ -65,10 +68,23 @@ const Home = () => {
     })
   }, [])
 
+  const loadGenres = async t => {
+    setConfigLoading(true)
+    const response = await fetchFromSpotify({
+      token: t,
+      endpoint: 'recommendations/available-genre-seeds'
+    })
+    console.log(response)
+    setGenres(response.genres)
+    setConfigLoading(false)
+  }
+
   if (authLoading || configLoading) {
     return <div>Loading...</div>
   }
+  
 
+  //---------JSX---------\\
   return (
     <div>
       <Container>
@@ -76,34 +92,37 @@ const Home = () => {
         <Card>
           <Select
             value={selectedGenre}
-            onChange={event => {
-              setSelectedGenre(event.target.value)
-            }}
+
+            onChange={event => setSelectedGenre(event.target.value)}
           >
-            <option value='' >Select Your Genre</option>
+            <option value='' disabled>Select Your Genre</option>
+
             {genres.map(genre => (
               <option key={genre} value={genre}>
                 {genre}
               </option>
             ))}
           </Select>
-          <Select value={songs}>
-            <option value='' >Artist Choices</option>
-            {songs.map(song => (
-              <option key={song.trackName} value={song}>
-                {song.trackName}
-              </option>
-            ))}
+
+          <Select
+            value={qtyArtistsChosen}
+            onChange={event => setQtyArtistsChosen(event.target.value)}
+          >
+            <option value='2' disabled>Artist Choices</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
           </Select>
-          <Select value={artists}>
-            <option value='' >Something Choices</option>
-            {artists.map(artist => (
-              <option key={artist} value={artist}>
-                {artist}
-              </option>
-            ))}
+          <Select
+          value={qtySongs}
+          onChange={event => setQtySongs(event.target.value)}
+          >
+            <option value='1' disabled> Number of Songs </option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
           </Select>
-          <Button>START</Button>
+          <NavLink to="/game"><Button>START</Button></NavLink>
         </Card>
       </Container>
     </div>
