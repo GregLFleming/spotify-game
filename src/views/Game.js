@@ -6,7 +6,7 @@ import Card from '../components/Card.jsx'
 import Container from '../components/Container.jsx'
 import Header from '../components/Header.jsx'
 import styled from "styled-components"
-import { playSong, getRandomSong } from '../services/helpers';
+import { selectNArtists, playSong, getRandomSong } from '../services/helpers';
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
 import { qtySongsAtom, gameStatusAtom, artistChoicesAtom, songsToChooseFromAtom, qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
 import fetchFromSpotify from '../services/api.js'
@@ -55,6 +55,7 @@ const Game = () => {
   const [artistChoices, setArtistChoices] = useRecoilState(artistChoicesAtom)
   const [gameStatus, setGameStatus] = useRecoilState(gameStatusAtom)
   const [qtySongs, setQtySongs] = useRecoilState(qtySongsAtom )
+  const [artistsToChooseFrom, setArtistsToChooseFrom] = useRecoilState(artistsToChooseFromAtom)
 
 
   const [config, setConfig] = useState({
@@ -107,12 +108,13 @@ const Game = () => {
 
   const handlePlaySong = (url) => {
     timer.reset()
+    startNewRound();
     // playSong(url)
   }
   //---------Game Logic---------\\
   const startNewRound = () => {
     setSongToGuess(getRandomSong(songsToChooseFrom))
-    // setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists))
+    setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists, songToGuess))
     timer.reset();
   }
 
@@ -139,10 +141,10 @@ const Game = () => {
           <Header>Round {roundNumber}</Header>
           <Card>
             <GridContainer>
-              {[...Array(parseInt(qtyArtistsChosen)),]
-                .map((value, index) => (
+              {artistChoices
+                .map((artist, index) => (
                   <GridItem key={index}>
-                    <Button style={{ margin: '10px' }} id={index}>ArtistNameHere {index + 1}</Button>
+                    <Button style={{ margin: '10px' }} id={index}>{artist}{index + 1}</Button>
                   </GridItem>))}
             </GridContainer>
             <Button onClick={handlePlaySong}>PLAY SONG</Button>
