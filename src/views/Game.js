@@ -140,13 +140,13 @@ const handlePlaySong = (url) => {
             <Button style={{cursor: 'default'}}>Time remaining: {timeRemaining}</Button>
           </span>
           
-          <ResultPopup>
+          {/* <ResultPopup>
             <h2>You Win / Lose!!!</h2> <br/>
             <span style={{display: "flex"}}>
               <Button style={{marginRight: '50px'}}>Return to Menu</Button>
               <Button>Try Again</Button>
             </span>
-          </ResultPopup>
+          </ResultPopup> */}
           
           {/* {
             !gameOver ? <ResultPopup>You Lose</ResultPopup> : <ResultPopup>
