@@ -6,8 +6,8 @@ import Button from '../components/Button.jsx'
 import Select from '../components/Select.jsx'
 
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
-import { genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom, songsToChooseFromAtom } from '../recoil/atoms' //individual value you need access to
-import { loadGenres, loadSongs, parseSongs } from '../services/SpotifyQuery.js'
+import { genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom, songsToChooseFromAtom, artistsToChooseFromAtom } from '../recoil/atoms' //individual value you need access to
+import { loadArtists, loadGenres, loadSongs, parseArtists, parseSongs } from '../services/SpotifyQuery.js'
 import { request } from '../services/api'
 
 
@@ -30,6 +30,7 @@ const Home = () => {
   const [configLoading, setConfigLoading] = useRecoilState(configLoadingAtom)
   const [token, setToken] = useRecoilState(tokenAtom)
   const [songs, setSongs] = useRecoilState(songsToChooseFromAtom)
+  const [artists, setArtists] = useRecoilState(artistsToChooseFromAtom)
 
   useEffect(() => {
     setAuthLoading(true)
@@ -47,6 +48,7 @@ const Home = () => {
         loadGenres(storedToken.value, setGenres)
         //setConfigLoading(false)
         parseSongs(loadSongs(storedToken.value, "rock"), setSongs)
+        parseArtists(loadArtists(storedToken.value, "rock"), setArtists)
         return
       }
     }
@@ -93,15 +95,14 @@ const Home = () => {
               </option>
             ))}
           </Select>
-          <Select>
-            <option value={''}> Number of Songs </option>
-
-            <option>
-
-            </option>
-
+          <Select value={artists}>
+            <option value='' >Something Choices</option>
+            {artists.map(artist => (
+              <option key={artist} value={artist}>
+                {artist}
+              </option>
+            ))}
           </Select>
-
           <Button>START</Button>
         </Card>
       </Container>

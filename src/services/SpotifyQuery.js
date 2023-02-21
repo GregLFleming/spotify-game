@@ -52,5 +52,21 @@ export const loadArtists = async (t, genre) => {
         endpoint: `search?q=genre%3A${genre}&type=artist`
     })
     console.log(response)
-    //setArtists(response.artists)
+    return response.artists.items
 }
+
+export const parseArtists = (artistListPromise, setArtists) => {
+    return artistListPromise.then((artistList) => {
+        //console.log("songs")
+        //console.log(artistList)
+        //console.log(artistList[0])
+        //console.log(destructureArtists(artistList[0]))
+        let parsedList = artistList.map(artist => destructureArtists(artist))
+        //console.log(parsedList)
+        setArtists(parsedList)
+    });
+}
+
+const destructureArtists = artist => (
+    artist.name
+)
