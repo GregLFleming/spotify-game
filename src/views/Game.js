@@ -6,15 +6,15 @@ import Card from '../components/Card.jsx'
 import Container from '../components/Container.jsx'
 import Header from '../components/Header.jsx'
 import styled from "styled-components"
-import { selectNArtists, getRandomSong } from '../services/helpers';
+import  {displayNumArtists, playSong, selectNArtists, getRandomSong}  from '../services/helpers';
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
 import { qtySongsAtom, gameStatusAtom, artistChoicesAtom, songsToChooseFromAtom, qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
 import fetchFromSpotify from '../services/api.js'
+import { loadArtists, parseArtists } from '../services/SpotifyQuery.js'
 import { async } from 'regenerator-runtime'
 import { initial } from 'lodash'
+import ResultPopup from '../components/ResultPopup.jsx'
 
-
-const ARTIST_KEY = "artistKey"
 //----------------Styling----------------\\
 const GridContainer = styled.div`{}
 margin: 20px auto;
@@ -55,14 +55,31 @@ const Game = () => {
   const [artistChoices, setArtistChoices] = useRecoilState(artistChoicesAtom)
   const [gameStatus, setGameStatus] = useRecoilState(gameStatusAtom)
   const [qtySongs, setQtySongs] = useRecoilState(qtySongsAtom )
+  const [popup, setPopup] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
+  
+  useEffect(() => {
+    if(timeRemaining <= 0){
+      setGameOver(!gameOver)
+    }
+    if(livesRemaining < 1){
+      setGameOver(!gameOver)
+    }
+  },[setGameOver])
+  
+  useEffect(() => {
+    if(gameOver){
+      setPopup(!popup)
+    }
+  },[setPopup]);
 
-
-  const [config, setConfig] = useState({
-    retrievedArtists: Number.parseInt(
-      JSON.parse(localStorage.getItem(ARTIST_KEY))
-    )
+  useEffect(() => {
+    const artists = JSON.parse(localStorage.getItem('artists'))
+    if(artists){
+      setArtists(artists.items.name)
+    }
   })
-
+  
   // const getArtists = async () => {
   //   const artistRequest = await fetchFromSpotify({
   //     token,
@@ -87,6 +104,7 @@ const Game = () => {
     })
     sound.play()
   }
+
 
   //---------Timer Code---------\\
   const Ref = useRef(null);
@@ -159,27 +177,47 @@ const Game = () => {
     }
   }
 
-
   //---------JSX---------\\
   return (
     <div>
       <Container>
-          <Header>Round {roundNumber}</Header>
-          <Card>
-            <GridContainer>
+        <Header>Round {roundNumber}</Header>
+        <Card>
+          <GridContainer>
               {artistChoices
                 .map((artist, index) => (
                   <GridItem key={index}>
                     <Button onClick={event => handleUserGuess(event.target.innerHTML)} style={{ margin: '10px' }} id={index}>{artist}</Button>
                   </GridItem>))}
             </GridContainer>
-            <Button onClick={handlePlaySong}>PLAY SONG</Button>
-            <span style={{ display: 'flex', flexDirection: 'row' }}>
-              <Button style={{ marginRight: '220px' }}>Lives Remaining: {livesRemaining}</Button>
-              <Button>Time remaining: {timeRemaining} {gameStatus}</Button>
+          <Button onClick = {handlePlaySong}>PLAY SONG</Button>
+          <span style={{ display: 'flex', flexDirection: 'row' }}>
+            <Button style={{ marginRight: '220px', cursor: 'default' }}>Lives Remaining: {livesRemaining}</Button>
+            <Button style={{cursor: 'default'}}>Time remaining: {timeRemaining}</Button>
+          </span>
+          
+          {/* <ResultPopup>
+            <h2>You Win / Lose!!!</h2> <br/>
+            <span style={{display: "flex"}}>
+              <Button style={{marginRight: '50px'}}>Return to Menu</Button>
+              <Button>Try Again</Button>
             </span>
-          </Card>
-        </Container> 
+          </ResultPopup> */}
+          
+          {/* {
+            !gameOver ? <ResultPopup>You Lose</ResultPopup> : <ResultPopup>
+            </ResultPopup>
+          } */}
+        {/* {
+          !popup &&
+          <ResultPopup></ResultPopup>
+        }
+        {
+          popup &&
+          <ResultPopup>YOU LOSE!</ResultPopup>
+        } */}
+        </Card>
+      </Container>
     </div>
   )
 }

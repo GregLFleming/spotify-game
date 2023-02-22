@@ -51,7 +51,7 @@ export const qtySongsAtom = atom({
 
 export const timeLimitAtom = atom({
     key: 'timeLimit',
-    default: 30
+    default: 3
 });
 
 
