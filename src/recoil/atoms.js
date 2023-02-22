@@ -74,7 +74,7 @@ export const livesRemainingAtom = atom({
 
 export const timeRemainingAtom = atom({
     key: 'timeRemaining',
-    default: '0'
+    default: '30'
 });
 
 export const songToGuessAtom = atom({
@@ -97,4 +97,3 @@ export const gameOverAtom = atom({
     key: 'gameOver',
     default: false
 });
-

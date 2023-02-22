@@ -9,7 +9,7 @@ export const checkUserGuess = (userGuess, correctAnswer) => {
 }
 
 export const getRandomSong = (listOfSongs) => {
-  return(listOfSongs[getRandomInt(listOfSongs.length)])
+  return (listOfSongs[getRandomInt(listOfSongs.length)])
 }
 
 export const getRandomInt = (maxValue) => {
@@ -24,14 +24,40 @@ export const selectNArtists = (qtyArtistsChosen, artists, songToGuess) => {
   let nChoices = Array(n)
   const resultLocation = getRandomInt(n - 1)
   nChoices[resultLocation] = songToGuess.artist
-  
+
   let i = 0
   //populate all remaining indecies of array with random artists
-  while(i < n){
-    if(i != resultLocation){
+  while (i < n) {
+    if (i != resultLocation) {
       nChoices[i] = artists[getRandomInt(artists.length - 1)]
     }
-    i+= 1;
+    i += 1;
   }
   return nChoices
+}
+
+export const createCountdownTimer = (maxTime, setTimeRemaining) => {
+  let timer = {
+    timeRemaining: maxTime,
+    timerId: null,
+    isRunning: false,
+
+    start: function () {this.isRunning ? null : this.timerId = setInterval(() => {
+          this.timeRemaining -= 1
+          setTimeRemaining(this.timeRemaining)
+          this.isRunning = true
+        }, 1000) },
+
+    stop: function () {
+      clearInterval(this.timerId)
+      this.isRunning = false;
+    },
+
+    reset: function () {
+      this.timeRemaining = maxTime
+      setTimeRemaining(maxTime)
+      this.isRunning = false;
+    }
+  }
+  return timer;
 }

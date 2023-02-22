@@ -6,7 +6,7 @@ import Card from '../components/Card.jsx'
 import Container from '../components/Container.jsx'
 import Header from '../components/Header.jsx'
 import styled from "styled-components"
-import { displayNumArtists, playSong, selectNArtists, getRandomSong } from '../services/helpers';
+import { createCountdownTimer, displayNumArtists, playSong, selectNArtists, getRandomSong } from '../services/helpers';
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
 import { maxLivesAtom, gameOverAtom, popupAtom, qtySongsAtom, gameStatusAtom, artistChoicesAtom, songsToChooseFromAtom, qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
 import fetchFromSpotify from '../services/api.js'
@@ -59,44 +59,6 @@ const Game = () => {
   const [gameOver, setGameOver] = useRecoilState(gameOverAtom);
   const [maxLives, setMaxLives] = useRecoilState(maxLivesAtom);
 
-  // useEffect(() => {
-  //   if (timeRemaining <= 0) {
-  //     setGameOver(!gameOver)
-  //   }
-  //   if (livesRemaining < 1) {
-  //     setGameOver(!gameOver)
-  //   }
-  // }, [setGameOver])
-
-  // useEffect(() => {
-  //   if (gameOver) {
-  //     setPopup(!popup)
-  //   }
-  // }, [setPopup]);
-
-  useEffect(() => {
-    const artists = JSON.parse(localStorage.getItem('artists'))
-    if (artists) {
-      setArtists(artists.items.name)
-    }
-  })
-
-  // const getArtists = async () => {
-  //   const artistRequest = await fetchFromSpotify({
-  //     token,
-  //     endpoint: `artists/${songToGuess.chosenArtists[0].id}`
-  //   });
-
-  //   const artistResponse = await fetchFromSpotify({
-  //     token,
-  //     endpoint: `artists/${songToGuess.chosenArtists[0].id}/related-artists`,
-  //   });
-  //   setChosenArtists(
-  //     randomizer(artistResponse.chosenArtists, config.retrievedArtists - 1).map((a) => ({ correct: false, a })).concat([{ correct: true, artistRequest }]).sort(() => Math.random() - 0.5)
-  //   )
-  // }
-
-
   function playSong(url) {
     const sound = new Howl({
       src: [url],
@@ -109,53 +71,46 @@ const Game = () => {
 
 
   //---------Timer Code---------\\
-  const Ref = useRef(null);
-  useEffect(() => { timer.reset }, []);
-
-  const timer = {
-    start: function (timeOut) {
-      const total = Date.parse(timeOut) - Date.parse(new Date());
-      const seconds = Math.floor((total / 1000) % 60);
-      if (seconds >= 0) {
-        setTimeRemaining(seconds)
-      }
-    },
-
-    reset: function () {
-      let timeOut = new Date();
-
-      timeOut.setSeconds(timeOut.getSeconds() + timeLimit);
-      setTimeRemaining(timeLimit);
-
-      if (Ref.current) {
-        clearInterval(Ref.current);
-      }
-      const id = setInterval(() => { this.start(timeOut) }, 1000)
-      Ref.current = id;
-    }
-  }
-
   const handlePlaySong = () => {
-    timer.reset()
+    timer.current.start()
     console.log(songToGuess)
     playSong(songToGuess.url)
   }
+
   //---------Game Logic---------\\
+
+  //reset timer on first load
+
+  const resetGame = () => {
+    const songToGuessIntermediate = getRandomSong(songsToChooseFrom)
+    setRoundNumber(1);
+    setLivesRemaining(maxLives);
+    setSongToGuess(songToGuessIntermediate)
+    setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists, songToGuessIntermediate));
+    setGameOver(false);
+    setPopup('');
+    timer.current.stop();
+    timer.current.reset();
+  }
+
+  //create a new timer
+  const timer = useRef(createCountdownTimer(timeLimit, setTimeRemaining));
+  
   //Start new rounds when roundNumber is changed
   const startNewRound = () => {
+    timer.current.reset()
+    timer.current.stop()
     const songToGuessIntermediate = getRandomSong(songsToChooseFrom)
     setRoundNumber(parseInt(roundNumber) + 1)
     setSongToGuess(songToGuessIntermediate)
     setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists, songToGuessIntermediate))
   }
 
-  // const [popup, setPopup] = useRecoilState(popupAtom)
-  // const [gameOver, setGameOver] = useRecoilState(gameOverAtom);
-
   //monitor game state
   useEffect(() => {
     if (livesRemaining < 1 || timeRemaining < 1) {
       console.log("Lose condition reached")
+      console.log(livesRemaining, timeRemaining)
       setPopup("You Lose!!!")
       setGameOver(true)
     }
@@ -176,24 +131,21 @@ const Game = () => {
       setLivesRemaining(parseInt(livesRemaining) - 1)
     }
   }
-  useEffect(() => { const volumeSlider = document.getElementById('volume');
-  console.log(volumeSlider)
-  volumeSlider.addEventListener('input', function() {
-    const volume = parseFloat(this.value) / 12.0;
-    Howler.volume(volume);
-  }); }, []);
+  useEffect(() => {
+    const volumeSlider = document.getElementById('volume');
+    console.log(volumeSlider)
+    volumeSlider.addEventListener('input', function () {
+      const volume = parseFloat(this.value) / 12.0;
+      Howler.volume(volume);
+    });
+  }, []);
 
+  
 
-  const resetGame = () => {
-    const songToGuessIntermediate = getRandomSong(songsToChooseFrom)
-    setRoundNumber(1);
-    setLivesRemaining(maxLives);
-    setSongToGuess(songToGuessIntermediate)
-    setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists, songToGuessIntermediate));
-    setTimeRemaining(timeLimit);
-    setGameOver(false);
-    setPopup('');
-  }
+  const startTimer = () => timer.current.start()
+  const stopTimer = () => timer.current.stop()
+  const resetTimer = () => timer.current.reset()
+
 
   //---------JSX---------\\
   return (
@@ -202,33 +154,34 @@ const Game = () => {
         <Header>Round {roundNumber}</Header>
         <Card>
           <GridContainer>
-              {artistChoices
-                .map((artist, index) => (
-                  <GridItem key={index}>
-                    <Button onClick={event => handleUserGuess(event.target.innerHTML)} style={{ margin: '10px' }} id={index}>{artist}</Button>
-                  </GridItem>))}
-            </GridContainer>
-          <Button onClick = {handlePlaySong}>PLAY SONG</Button>
+            {artistChoices
+              .map((artist, index) => (
+                <GridItem key={index}>
+                  <Button onClick={event => handleUserGuess(event.target.innerHTML)} style={{ margin: '10px' }} id={index}>{artist}</Button>
+                </GridItem>))}
+          </GridContainer>
+          <Button onClick={handlePlaySong}>PLAY SONG</Button>
           <div>
-  <input type="range" id="volume" name="volume" min="0" max="12"/>
-  <label for="volume">Volume</label>
-</div>
+            <input type="range" id="volume" name="volume" min="0" max="12" />
+            <label for="volume">Volume</label>
+          </div>
           <span style={{ display: 'flex', flexDirection: 'row' }}>
             <Button style={{ marginRight: '220px', cursor: 'default' }}>Lives Remaining: {livesRemaining}</Button>
             <Button style={{ cursor: 'default' }}>Time remaining: {timeRemaining}</Button>
           </span>
-          {gameOver? 
+          {gameOver ?
             <ResultPopup>
               <h2>{popup}</h2> <br />
               <span style={{ display: "flex" }}>
-                <NavLink to = "/"><Button style={{ marginRight: '50px' }}>Return to Menu</Button></NavLink>
-                <Button onClick = {resetGame}>Try Again</Button>
+                <NavLink to="/"><Button onClick={resetGame} style={{ marginRight: '50px' }}>Return to Menu</Button></NavLink>
+                <Button onClick={resetGame}>Try Again</Button>
               </span>
             </ResultPopup>
-          : null}
-          
-
+            : null}
         </Card>
+        <Button onClick={startTimer}>Start</Button>
+        <Button onClick={stopTimer}>Stop</Button>
+        <Button onClick={resetTimer}>Reset</Button>
       </Container>
     </div>
   )
