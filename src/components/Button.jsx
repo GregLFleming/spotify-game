@@ -13,8 +13,5 @@ display: flex;
 flex-direction: row;
 align-items: center;
 justify-content: center;
-:disabled {
-    font-weight: bold;
-}
 `;
 export default Button;
