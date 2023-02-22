@@ -54,6 +54,11 @@ export const timeLimitAtom = atom({
     default: 30
 });
 
+export const maxLivesAtom = atom({
+    key: 'maxLives',
+    default: 1
+});
+
 
 
 //---------App Generated Storage---------\\
