@@ -6,14 +6,15 @@ import Card from '../components/Card.jsx'
 import Container from '../components/Container.jsx'
 import Header from '../components/Header.jsx'
 import styled from "styled-components"
-import  {displayNumArtists, playSong, selectNArtists, getRandomSong}  from '../services/helpers';
+import { displayNumArtists, playSong, selectNArtists, getRandomSong } from '../services/helpers';
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
-import { qtySongsAtom, gameStatusAtom, artistChoicesAtom, songsToChooseFromAtom, qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
+import { gameOverAtom, popupAtom, qtySongsAtom, gameStatusAtom, artistChoicesAtom, songsToChooseFromAtom, qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
 import fetchFromSpotify from '../services/api.js'
 import { loadArtists, parseArtists } from '../services/SpotifyQuery.js'
 import { async } from 'regenerator-runtime'
 import { initial } from 'lodash'
 import ResultPopup from '../components/ResultPopup.jsx'
+import { NavLink } from 'react-router-dom'
 
 //----------------Styling----------------\\
 const GridContainer = styled.div`{}
@@ -38,7 +39,6 @@ width: 40vw;
 height: 60vh;
 // background: black;
 `
-
 const randomizer = (arr, count) => arr.sort(() => Math.random() - 0.5).slice(0, count);
 
 
@@ -53,33 +53,32 @@ const Game = () => {
   const [chosenArtists, setChosenArtists] = useRecoilState(artistsToChooseFromAtom)
   const [songsToChooseFrom, setSongsToChooseFrom] = useRecoilState(songsToChooseFromAtom)
   const [artistChoices, setArtistChoices] = useRecoilState(artistChoicesAtom)
-  const [gameStatus, setGameStatus] = useRecoilState(gameStatusAtom)
-  const [qtySongs, setQtySongs] = useRecoilState(qtySongsAtom )
-  const [popup, setPopup] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
-  
-  useEffect(() => {
-    if(timeRemaining <= 0){
-      setGameOver(!gameOver)
-    }
-    if(livesRemaining < 1){
-      setGameOver(!gameOver)
-    }
-  },[setGameOver])
-  
-  useEffect(() => {
-    if(gameOver){
-      setPopup(!popup)
-    }
-  },[setPopup]);
+  const [qtySongs, setQtySongs] = useRecoilState(qtySongsAtom)
+
+  const [popup, setPopup] = useRecoilState(popupAtom)
+  const [gameOver, setGameOver] = useRecoilState(gameOverAtom);
+
+  // useEffect(() => {
+  //   if (timeRemaining <= 0) {
+  //     setGameOver(!gameOver)
+  //   }
+  //   if (livesRemaining < 1) {
+  //     setGameOver(!gameOver)
+  //   }
+  // }, [setGameOver])
+
+  // useEffect(() => {
+  //   if (gameOver) {
+  //     setPopup(!popup)
+  //   }
+  // }, [setPopup]);
 
   useEffect(() => {
     const artists = JSON.parse(localStorage.getItem('artists'))
-    if(artists){
+    if (artists) {
       setArtists(artists.items.name)
     }
   })
-  
 
   // const getArtists = async () => {
   //   const artistRequest = await fetchFromSpotify({
@@ -123,14 +122,14 @@ const Game = () => {
 
     reset: function () {
       let timeOut = new Date();
-      
+
       timeOut.setSeconds(timeOut.getSeconds() + timeLimit);
       setTimeRemaining(timeLimit);
 
-      if (Ref.current){
+      if (Ref.current) {
         clearInterval(Ref.current);
       }
-      const id = setInterval(() => {this.start(timeOut)}, 1000)
+      const id = setInterval(() => { this.start(timeOut) }, 1000)
       Ref.current = id;
     }
   }
@@ -149,27 +148,30 @@ const Game = () => {
     setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists, songToGuessIntermediate))
   }
 
-  // //monitor game state
-  // useEffect(() => {
-  //   if(livesRemaining < 1 || timeRemaining < 1){
-  //     setGameStatus("You Lose!!!")
-  //   }
-  //   else if(roundNumber > qtySongs){
-  //     setGameStatus("You Win!!!")
-  //   }
-  //   else{
-  //     setGameStatus("")
-  //   }
+  // const [popup, setPopup] = useRecoilState(popupAtom)
+  // const [gameOver, setGameOver] = useRecoilState(gameOverAtom);
 
-  // }, [timeRemaining, livesRemaining]);
+  //monitor game state
+  useEffect(() => {
+    if (livesRemaining < 1 || timeRemaining < 1) {
+      console.log("Lose condition reached")
+      setPopup("You Lose!!!")
+      setGameOver(true)
+    }
+    else if (roundNumber > qtySongs) {
+      setPopup("You Win!!!")
+      setGameOver(true)
+    }
+
+  }, [timeRemaining, livesRemaining, roundNumber]);
 
   //check user answer
   const handleUserGuess = (userGuess) => {
-    if(userGuess === songToGuess.artist){
+    if (userGuess === songToGuess.artist) {
       console.log("Correct guess!!!")
       startNewRound();
     }
-    else{
+    else {
       setLivesRemaining(parseInt(livesRemaining) - 1)
     }
   }
@@ -180,6 +182,17 @@ const Game = () => {
     Howler.volume(volume);
   }); }, []);
 
+
+  const resetGame = () => {
+    const songToGuessIntermediate = getRandomSong(songsToChooseFrom)
+    setRoundNumber(1);
+    setLivesRemaining(1);
+    setSongToGuess(songToGuessIntermediate)
+    setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists, songToGuessIntermediate));
+    setTimeRemaining(timeLimit);
+    setGameOver(false);
+    setPopup('');
+  }
 
   //---------JSX---------\\
   return (
@@ -201,29 +214,19 @@ const Game = () => {
 </div>
           <span style={{ display: 'flex', flexDirection: 'row' }}>
             <Button style={{ marginRight: '220px', cursor: 'default' }}>Lives Remaining: {livesRemaining}</Button>
-            <Button style={{cursor: 'default'}}>Time remaining: {timeRemaining}</Button>
+            <Button style={{ cursor: 'default' }}>Time remaining: {timeRemaining}</Button>
           </span>
-          
-          {/* <ResultPopup>
-            <h2>You Win / Lose!!!</h2> <br/>
-            <span style={{display: "flex"}}>
-              <Button style={{marginRight: '50px'}}>Return to Menu</Button>
-              <Button>Try Again</Button>
-            </span>
-          </ResultPopup> */}
-          
-          {/* {
-            !gameOver ? <ResultPopup>You Lose</ResultPopup> : <ResultPopup>
+          {gameOver? 
+            <ResultPopup>
+              <h2>{popup}</h2> <br />
+              <span style={{ display: "flex" }}>
+                <NavLink to = "/"><Button style={{ marginRight: '50px' }}>Return to Menu</Button></NavLink>
+                <Button onClick = {resetGame}>Try Again</Button>
+              </span>
             </ResultPopup>
-          } */}
-        {/* {
-          !popup &&
-          <ResultPopup></ResultPopup>
-        }
-        {
-          popup &&
-          <ResultPopup>YOU LOSE!</ResultPopup>
-        } */}
+          : null}
+          
+
         </Card>
       </Container>
     </div>
