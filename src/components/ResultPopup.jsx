@@ -3,8 +3,8 @@ import styled from 'styled-components';
 
 
 export const ResultPopup = styled.div`
-width: 500px;
-height: 500px;
+width: 40vw;
+height: 40vw;
 background-color: white;
 border: 2px solid black;
 color: black;

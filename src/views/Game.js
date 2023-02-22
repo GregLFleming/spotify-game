@@ -7,6 +7,11 @@ import Container from '../components/Container.jsx'
 import Header from '../components/Header.jsx'
 import styled from "styled-components"
 import { createCountdownTimer, displayNumArtists, playSong, selectNArtists, getRandomSong } from '../services/helpers';
+import Spin from 'react-reveal/Spin';
+import Flash from 'react-reveal/Flash';
+import Jump from 'react-reveal/Jump';
+import Shake from 'react-reveal/Shake';
+import Tada from 'react-reveal/Tada';
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
 import { maxLivesAtom, gameOverAtom, popupAtom, qtySongsAtom, gameStatusAtom, artistChoicesAtom, songsToChooseFromAtom, qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
 import fetchFromSpotify from '../services/api.js'
@@ -15,6 +20,9 @@ import { async } from 'regenerator-runtime'
 import { initial } from 'lodash'
 import ResultPopup from '../components/ResultPopup.jsx'
 import { NavLink } from 'react-router-dom'
+import guitarist from '../assets/guitarist.jpg';
+import cassette from '../assets/cassette.jpg';
+import gameStyles from '../styles/gameStyles.css';
 
 //----------------Styling----------------\\
 const GridContainer = styled.div`{}
@@ -59,6 +67,12 @@ const Game = () => {
   const [gameOver, setGameOver] = useRecoilState(gameOverAtom);
   const [maxLives, setMaxLives] = useRecoilState(maxLivesAtom);
 
+  useEffect(() => {
+    const artists = JSON.parse(localStorage.getItem('artists'))
+    if (artists) {
+      setArtists(artists.items.name)
+    }
+  })
   function playSong(url) {
     const sound = new Howl({
       src: [url],
@@ -107,12 +121,11 @@ const Game = () => {
   useEffect(() => {
     if (livesRemaining < 1 || timeRemaining < 1) {
       console.log("Lose condition reached")
-      console.log(livesRemaining, timeRemaining)
-      setPopup("You Lose!!!")
+      setPopup("Oops, you dropped that one.")
       setGameOver(true)
     }
     else if (roundNumber > qtySongs) {
-      setPopup("You Win!!!")
+      setPopup("Rock on, You won!!!")
       setGameOver(true)
     }
 
@@ -141,30 +154,38 @@ const Game = () => {
   return (
     <div>
       <Container>
-        <Header>Round {roundNumber}</Header>
+        <img src={guitarist} alt='Picture of guitarist'/>
+        <Header><Spin>{`Round ${roundNumber}`}</Spin></Header>
         <Card>
+          <Flash>
           <GridContainer>
-            {artistChoices
-              .map((artist, index) => (
-                <GridItem key={index}>
-                  <Button onClick={event => handleUserGuess(event.target.innerHTML)} style={{ margin: '10px' }} id={index}>{artist}</Button>
-                </GridItem>))}
-          </GridContainer>
-          <Button onClick={handlePlaySong}>PLAY SONG</Button>
+              {artistChoices
+                .map((artist, index) => (
+                  <GridItem key={index}>
+                    <Button onClick={event => handleUserGuess(event.target.innerHTML)} style={{ margin: '10px', backgroundColor: '#08B2E3' }} id={index} >{artist}</Button>
+                  </GridItem>))}
+            </GridContainer>
+            </Flash>
+            <Jump>
+          <Button id='gameButton' onClick = {handlePlaySong}>PLAY SONG</Button>
+          </Jump>
           <div>
             <input type="range" id="volume" name="volume" min="0" max="12" />
             <label for="volume">Volume</label>
           </div>
           <span style={{ display: 'flex', flexDirection: 'row' }}>
-            <Button style={{ marginRight: '220px', cursor: 'default' }}>Lives Remaining: {livesRemaining}</Button>
-            <Button style={{ cursor: 'default' }}>Time remaining: {timeRemaining}</Button>
+            <Button id='gameButton'  style={{ marginRight: '220px', cursor: 'default' }}>Lives Remaining: {livesRemaining}</Button>
+            <Button id='gameButton'  style={{ cursor: 'default' }}>Time remaining: {timeRemaining}</Button>
           </span>
-          {gameOver ?
-            <ResultPopup>
-              <h2>{popup}</h2> <br />
+          {gameOver? 
+            <ResultPopup className='ResultPopup' style={{backgroundImage: `url(${cassette})`
+          }}>
+              <h2><Shake>{popup}</Shake></h2> <br />
               <span style={{ display: "flex" }}>
-                <NavLink to="/"><Button onClick={resetGame} style={{ marginRight: '50px' }}>Return to Menu</Button></NavLink>
-                <Button onClick={resetGame}>Try Again</Button>
+                <NavLink style={{textDecoration: 'none'}} to = "/"><Tada><Button id='popupButton'  style={{ marginRight: '50px', textDecoration: 'none' }}>Return to Menu</Button></Tada></NavLink>
+                <Tada>
+                <Button id='popupButton' onClick = {resetGame}>Try Again</Button>
+                </Tada>
               </span>
             </ResultPopup>
             : null}
