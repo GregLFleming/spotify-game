@@ -3,14 +3,7 @@ import { useRef, useEffect } from 'react'
 import { timeRemainingAtom, timeLimitAtom } from '../recoil/atoms'
 import { useRecoilState } from 'recoil'
 
-export function playSong(url) {
-  const sound = new Howl({
-    src: [url],
-    preload: true,
-    html5: true,
-  })
-  sound.play()
-}
+
 export const checkUserGuess = (userGuess, correctAnswer) => {
   return (correctAnswer.artistName === userGuess)
 }
@@ -40,5 +33,11 @@ export const selectNArtists = (qtyArtistsChosen, artists, songToGuess) => {
     }
     i+= 1;
   }
+
+  console.log("N ARTISTS IS USING THESE VALUES")
+  console.log(qtyArtistsChosen)
+  console.log(artists)
+  console.log(songToGuess)
+  console.log(nChoices)
   return nChoices
 }

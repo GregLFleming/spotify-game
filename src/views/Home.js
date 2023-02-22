@@ -4,14 +4,14 @@ import Card from '../components/Card.jsx'
 import Container from '../components/Container.jsx'
 import Button from '../components/Button.jsx'
 import Select from '../components/Select.jsx'
+import { selectNArtists, getRandomSong } from '../services/helpers';
 
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
 import { loadArtists, loadGenres, loadSongs, parseArtists, parseSongs } from '../services/SpotifyQuery.js'
 import { request } from '../services/api'
 
-import { artistsToChooseFromAtom, songsToChooseFromAtom, timeLimitAtom, timeRemainingAtom, qtySongsAtom, qtyArtistsChosenAtom, genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom } from '../recoil/atoms' //individual value you need access to
+import { songToGuessAtom, artistChoicesAtom, artistsToChooseFromAtom, songsToChooseFromAtom, timeLimitAtom, timeRemainingAtom, qtySongsAtom, qtyArtistsChosenAtom, genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom, livesRemainingAtom } from '../recoil/atoms' //individual value you need access to
 import { NavLink } from 'react-router-dom'
-// import { startCountDownTimer } from '../services/helpers.js'
 
 const AUTH_ENDPOINT =
   'https://nuod0t2zoe.execute-api.us-east-2.amazonaws.com/FT-Classroom/spotify-auth-token'
@@ -25,12 +25,22 @@ const Home = () => {
   const [authLoading, setAuthLoading] = useRecoilState(tokenAuthorizationLoadingAtom)
   const [configLoading, setConfigLoading] = useRecoilState(configLoadingAtom)
   const [token, setToken] = useRecoilState(tokenAtom)
-  const [songs, setSongs] = useRecoilState(songsToChooseFromAtom)
-  const [artists, setArtists] = useRecoilState(artistsToChooseFromAtom)
+  
+  
   const [qtyArtistsChosen, setQtyArtistsChosen] = useRecoilState(qtyArtistsChosenAtom)
   const [qtySongs, setQtySongs] = useRecoilState(qtySongsAtom )
   const [timeLimit, setTimeLimit] = useRecoilState(timeLimitAtom)
+  const [livesRemaining, setLivesRemaining] = useRecoilState(livesRemainingAtom)
   
+  const [timeRemaining, setTimeRemaining] = useRecoilState(timeRemainingAtom)
+  
+  const [songs, setSongs] = useRecoilState(songsToChooseFromAtom)
+  const [artists, setArtists] = useRecoilState(artistsToChooseFromAtom)
+  const [artistChoices, setArtistChoices] = useRecoilState(artistChoicesAtom)
+  const [songToGuess, setSongToGuess] = useRecoilState(songToGuessAtom)
+  
+
+
   //---------Initial Loading---------\\
   useEffect(() => {
     setAuthLoading(true)
@@ -64,16 +74,20 @@ const Home = () => {
     })
   }, [selectedGenre])
 
-  // useEffect(() => {
-  //   console.log("<---------------Current state--------------->")
-  //   // console.log(selectedGenre)
-  //   // console.log(qtyArtistsChosen)
-  //   // console.log(qtySongs)
-  //   // console.log(genres)
-  //   // console.log(songs)
-  //   // console.log(artists)
-  // },[selectedGenre, qtyArtistsChosen, qtySongs, genres, songs, artists])
+  // const [songs, setSongs] = useRecoilState(songsToChooseFromAtom)
+  // const [artists, setArtists] = useRecoilState(artistsToChooseFromAtom)
+  // const [artistChoices, setArtistChoices] = useRecoilState(artistChoicesAtom)
+  // const [songToGuess, setSongToGuess] = useRecoilState(songToGuessAtom)
 
+  //Initialize the state for a new game
+  const prepareNewGame = () => {
+
+    const songToGuessIntermediate = getRandomSong(songs)
+    setLivesRemaining(1);
+    setSongToGuess(songToGuessIntermediate)
+    setArtistChoices(selectNArtists(qtyArtistsChosen, artists, songToGuessIntermediate));
+    setTimeRemaining(timeLimit);
+  }
 
   if (authLoading || configLoading) {
     return <div>Loading...</div>
@@ -87,7 +101,6 @@ const Home = () => {
         <Card>
           <Select
             value={selectedGenre}
-
             onChange={event => setSelectedGenre(event.target.value)}
           >
             <option value='' disabled>Select Your Genre</option>
@@ -117,7 +130,7 @@ const Home = () => {
             <option>2</option>
             <option>3</option>
           </Select>
-          <NavLink to="/game"><Button>START</Button></NavLink>
+          <NavLink to="/game"><Button onClick = {prepareNewGame}>START</Button></NavLink>
         </Card>
       </Container>
     </div>

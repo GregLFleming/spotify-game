@@ -6,7 +6,7 @@ import Card from '../components/Card.jsx'
 import Container from '../components/Container.jsx'
 import Header from '../components/Header.jsx'
 import styled from "styled-components"
-import { selectNArtists, playSong, getRandomSong } from '../services/helpers';
+import { selectNArtists, getRandomSong } from '../services/helpers';
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
 import { qtySongsAtom, gameStatusAtom, artistChoicesAtom, songsToChooseFromAtom, qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
 import fetchFromSpotify from '../services/api.js'
@@ -55,7 +55,6 @@ const Game = () => {
   const [artistChoices, setArtistChoices] = useRecoilState(artistChoicesAtom)
   const [gameStatus, setGameStatus] = useRecoilState(gameStatusAtom)
   const [qtySongs, setQtySongs] = useRecoilState(qtySongsAtom )
-  const [artistsToChooseFrom, setArtistsToChooseFrom] = useRecoilState(artistsToChooseFromAtom)
 
 
   const [config, setConfig] = useState({
@@ -64,19 +63,29 @@ const Game = () => {
     )
   })
 
-  const getArtists = async () => {
-    const artistRequest = await fetchFromSpotify({
-      token,
-      endpoint: `artists/${songToGuess.chosenArtists[0].id}`
-    });
+  // const getArtists = async () => {
+  //   const artistRequest = await fetchFromSpotify({
+  //     token,
+  //     endpoint: `artists/${songToGuess.chosenArtists[0].id}`
+  //   });
 
-    const artistResponse = await fetchFromSpotify({
-      token,
-      endpoint: `artists/${songToGuess.chosenArtists[0].id}/related-artists`,
-    });
-    setChosenArtists(
-      randomizer(artistResponse.chosenArtists, config.retrievedArtists - 1).map((a) => ({ correct: false, a })).concat([{ correct: true, artistRequest }]).sort(() => Math.random() - 0.5)
-    )
+  //   const artistResponse = await fetchFromSpotify({
+  //     token,
+  //     endpoint: `artists/${songToGuess.chosenArtists[0].id}/related-artists`,
+  //   });
+  //   setChosenArtists(
+  //     randomizer(artistResponse.chosenArtists, config.retrievedArtists - 1).map((a) => ({ correct: false, a })).concat([{ correct: true, artistRequest }]).sort(() => Math.random() - 0.5)
+  //   )
+  // }
+
+
+  function playSong(url) {
+    const sound = new Howl({
+      src: [url],
+      preload: true,
+      html5: true,
+    })
+    sound.play()
   }
 
   //---------Timer Code---------\\
@@ -106,16 +115,17 @@ const Game = () => {
     }
   }
 
-  const handlePlaySong = (url) => {
+  const handlePlaySong = () => {
     timer.reset()
-    startNewRound();
-    // playSong(url)
+    console.log(songToGuess)
+    playSong(songToGuess.url)
   }
   //---------Game Logic---------\\
+  //Start new rounds when roundNumber is changed
   const startNewRound = () => {
+    setRoundNumber(parseInt(roundNumber) + 1)
     setSongToGuess(getRandomSong(songsToChooseFrom))
     setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists, songToGuess))
-    timer.reset();
   }
 
   //monitor game state
@@ -130,8 +140,24 @@ const Game = () => {
       setGameStatus("")
     }
 
-  
-  }, [timeRemaining]);
+  }, [timeRemaining, livesRemaining]);
+
+  //check user answer
+  const handleUserGuess = (userGuess) => {
+    console.log("User Guess:")
+    console.log(userGuess)
+    console.log("Song to guess:")
+    console.log(songToGuess)
+    console.log("Song artist:")
+    console.log(songToGuess.artist)
+    if(userGuess === songToGuess.artist){
+      console.log("Correct guess!!!")
+      startNewRound();
+    }
+    else{
+      setLivesRemaining(parseInt(livesRemaining) - 1)
+    }
+  }
 
 
   //---------JSX---------\\
@@ -144,13 +170,13 @@ const Game = () => {
               {artistChoices
                 .map((artist, index) => (
                   <GridItem key={index}>
-                    <Button style={{ margin: '10px' }} id={index}>{artist}{index + 1}</Button>
+                    <Button onClick={event => handleUserGuess(event.target.innerHTML)} style={{ margin: '10px' }} id={index}>{artist}</Button>
                   </GridItem>))}
             </GridContainer>
             <Button onClick={handlePlaySong}>PLAY SONG</Button>
             <span style={{ display: 'flex', flexDirection: 'row' }}>
               <Button style={{ marginRight: '220px' }}>Lives Remaining: {livesRemaining}</Button>
-              <Button>Time remaining: {timeRemaining}</Button>
+              <Button>Time remaining: {timeRemaining} {gameStatus}</Button>
             </span>
           </Card>
         </Container> 
