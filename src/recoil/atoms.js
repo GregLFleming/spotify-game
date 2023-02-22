@@ -51,7 +51,7 @@ export const qtySongsAtom = atom({
 
 export const timeLimitAtom = atom({
     key: 'timeLimit',
-    default: 3
+    default: 30
 });
 
 
@@ -82,7 +82,14 @@ export const artistChoicesAtom = atom({
     default: []
 });
 
-export const gameStatusAtom = atom({
-    key: 'gameStatus',
-    default: ''
+
+export const popupAtom = atom({
+    key: 'popup',
+    default: "You Lose!"
 });
+
+export const gameOverAtom = atom({
+    key: 'gameOver',
+    default: false
+});
+

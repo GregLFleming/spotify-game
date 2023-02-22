@@ -33,11 +33,5 @@ export const selectNArtists = (qtyArtistsChosen, artists, songToGuess) => {
     }
     i+= 1;
   }
-
-  console.log("N ARTISTS IS USING THESE VALUES")
-  console.log(qtyArtistsChosen)
-  console.log(artists)
-  console.log(songToGuess)
-  console.log(nChoices)
   return nChoices
 }

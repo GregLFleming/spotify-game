@@ -10,7 +10,7 @@ import { useRecoilState } from 'recoil' //needed to manage state with recoil
 import { loadArtists, loadGenres, loadSongs, parseArtists, parseSongs } from '../services/SpotifyQuery.js'
 import { request } from '../services/api'
 
-import { songToGuessAtom, artistChoicesAtom, artistsToChooseFromAtom, songsToChooseFromAtom, timeLimitAtom, timeRemainingAtom, qtySongsAtom, qtyArtistsChosenAtom, genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom, livesRemainingAtom } from '../recoil/atoms' //individual value you need access to
+import { roundNumberAtom, popupAtom, gameOverAtom, songToGuessAtom, artistChoicesAtom, artistsToChooseFromAtom, songsToChooseFromAtom, timeLimitAtom, timeRemainingAtom, qtySongsAtom, qtyArtistsChosenAtom, genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom, livesRemainingAtom } from '../recoil/atoms' //individual value you need access to
 import { NavLink } from 'react-router-dom'
 
 const AUTH_ENDPOINT =
@@ -38,6 +38,10 @@ const Home = () => {
   const [artists, setArtists] = useRecoilState(artistsToChooseFromAtom)
   const [artistChoices, setArtistChoices] = useRecoilState(artistChoicesAtom)
   const [songToGuess, setSongToGuess] = useRecoilState(songToGuessAtom)
+  const [roundNumber, setRoundNumber] = useRecoilState(roundNumberAtom)
+
+  const [popup, setPopup] = useRecoilState(popupAtom)
+  const [gameOver, setGameOver] = useRecoilState(gameOverAtom);
   
 
 
@@ -81,12 +85,14 @@ const Home = () => {
 
   //Initialize the state for a new game
   const prepareNewGame = () => {
-
     const songToGuessIntermediate = getRandomSong(songs)
+    setRoundNumber(1);
     setLivesRemaining(1);
     setSongToGuess(songToGuessIntermediate)
     setArtistChoices(selectNArtists(qtyArtistsChosen, artists, songToGuessIntermediate));
     setTimeRemaining(timeLimit);
+    setGameOver(false);
+    setPopup('');
   }
 
   if (authLoading || configLoading) {
@@ -100,10 +106,9 @@ const Home = () => {
         <Header>Welcome To Whos-Who</Header>
         <Card>
           <Select
-            value={selectedGenre}
             onChange={event => setSelectedGenre(event.target.value)}
           >
-            <option value='' disabled>Select Your Genre</option>
+            <option>Select Your Genre</option>
 
             {genres.map(genre => (
               <option key={genre} value={genre}>
@@ -116,7 +121,7 @@ const Home = () => {
             value={qtyArtistsChosen}
             onChange={event => setQtyArtistsChosen(event.target.value)}
           >
-            <option value='2' disabled>Artist Choices</option>
+            <option>Artist Choices</option>
             <option>2</option>
             <option>3</option>
             <option>4</option>
@@ -125,8 +130,8 @@ const Home = () => {
           value={qtySongs}
           onChange={event => setQtySongs(event.target.value)}
           >
-            <option value='1' disabled> Number of Songs </option>
-            <option>1</option>
+            <option> Number of Songs </option>
+            <option isDisabled = 'true'>1</option>
             <option>2</option>
             <option>3</option>
           </Select>
