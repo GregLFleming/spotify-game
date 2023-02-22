@@ -80,6 +80,7 @@ const Game = () => {
     }
   })
   
+
   // const getArtists = async () => {
   //   const artistRequest = await fetchFromSpotify({
   //     token,
@@ -104,6 +105,7 @@ const Game = () => {
     })
     sound.play()
   }
+
 
 
   //---------Timer Code---------\\
@@ -171,6 +173,13 @@ const Game = () => {
       setLivesRemaining(parseInt(livesRemaining) - 1)
     }
   }
+  useEffect(() => { const volumeSlider = document.getElementById('volume');
+  console.log(volumeSlider)
+  volumeSlider.addEventListener('input', function() {
+    const volume = parseFloat(this.value) / 12.0;
+    Howler.volume(volume);
+  }); }, []);
+
 
   //---------JSX---------\\
   return (
@@ -186,6 +195,10 @@ const Game = () => {
                   </GridItem>))}
             </GridContainer>
           <Button onClick = {handlePlaySong}>PLAY SONG</Button>
+          <div>
+  <input type="range" id="volume" name="volume" min="0" max="12"/>
+  <label for="volume">Volume</label>
+</div>
           <span style={{ display: 'flex', flexDirection: 'row' }}>
             <Button style={{ marginRight: '220px', cursor: 'default' }}>Lives Remaining: {livesRemaining}</Button>
             <Button style={{cursor: 'default'}}>Time remaining: {timeRemaining}</Button>
