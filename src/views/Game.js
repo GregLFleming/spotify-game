@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect} from 'react'
 
 import Button from '../components/Button.jsx'
 import Card from '../components/Card.jsx'
@@ -68,9 +68,6 @@ const Game = () => {
     sound.play()
   }
 
-
-
-  //---------Timer Code---------\\
   const handlePlaySong = () => {
     timer.current.start()
     console.log(songToGuess)
@@ -140,13 +137,6 @@ const Game = () => {
     });
   }, []);
 
-  
-
-  const startTimer = () => timer.current.start()
-  const stopTimer = () => timer.current.stop()
-  const resetTimer = () => timer.current.reset()
-
-
   //---------JSX---------\\
   return (
     <div>
@@ -179,9 +169,6 @@ const Game = () => {
             </ResultPopup>
             : null}
         </Card>
-        <Button onClick={startTimer}>Start</Button>
-        <Button onClick={stopTimer}>Stop</Button>
-        <Button onClick={resetTimer}>Reset</Button>
       </Container>
     </div>
   )
