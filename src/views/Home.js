@@ -13,7 +13,7 @@ import { useRecoilState } from 'recoil' //needed to manage state with recoil
 import { loadArtists, loadGenres, loadSongs, parseArtists, parseSongs } from '../services/SpotifyQuery.js'
 import { request } from '../services/api'
 
-import { roundNumberAtom, popupAtom, gameOverAtom, songToGuessAtom, artistChoicesAtom, artistsToChooseFromAtom, songsToChooseFromAtom, timeLimitAtom, timeRemainingAtom, qtySongsAtom, qtyArtistsChosenAtom, genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom, livesRemainingAtom } from '../recoil/atoms' //individual value you need access to
+import { maxLivesAtom, roundNumberAtom, popupAtom, gameOverAtom, songToGuessAtom, artistChoicesAtom, artistsToChooseFromAtom, songsToChooseFromAtom, timeLimitAtom, timeRemainingAtom, qtySongsAtom, qtyArtistsChosenAtom, genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom, livesRemainingAtom } from '../recoil/atoms' //individual value you need access to
 import { NavLink } from 'react-router-dom'
 
 const AUTH_ENDPOINT =
@@ -45,6 +45,7 @@ const Home = () => {
 
   const [popup, setPopup] = useRecoilState(popupAtom)
   const [gameOver, setGameOver] = useRecoilState(gameOverAtom);
+  const [maxLives, setMaxLives] = useRecoilState(maxLivesAtom);
   
 
 
@@ -90,7 +91,7 @@ const Home = () => {
   const prepareNewGame = () => {
     const songToGuessIntermediate = getRandomSong(songs)
     setRoundNumber(1);
-    setLivesRemaining(1);
+    setLivesRemaining(maxLives);
     setSongToGuess(songToGuessIntermediate)
     setArtistChoices(selectNArtists(qtyArtistsChosen, artists, songToGuessIntermediate));
     setTimeRemaining(timeLimit);
@@ -140,8 +141,8 @@ const Home = () => {
             <option>3</option>
           </Select>
           <Select 
-          value={livesRemaining}
-          onChange={event => setLivesRemaining(event.target.value)}
+          value={maxLives}
+          onChange={event => setMaxLives(event.target.value)}
           >
             <option>How many lives?</option>
             <option>1</option>
