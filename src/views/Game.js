@@ -6,6 +6,12 @@ import Card from '../components/Card.jsx'
 import Container from '../components/Container.jsx'
 import Header from '../components/Header.jsx'
 import styled from "styled-components"
+import Spin from 'react-reveal/Spin';
+import Flash from 'react-reveal/Flash';
+import Jump from 'react-reveal/Jump';
+import Shake from 'react-reveal/Shake';
+import Tada from 'react-reveal/Tada';
+
 import { displayNumArtists, playSong, selectNArtists, getRandomSong } from '../services/helpers';
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
 import { maxLivesAtom, gameOverAtom, popupAtom, qtySongsAtom, gameStatusAtom, artistChoicesAtom, songsToChooseFromAtom, qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
@@ -170,8 +176,9 @@ const Game = () => {
     <div>
       <Container>
         <img src={guitarist} alt='Picture of guitarist'/>
-        <Header>Round {roundNumber}</Header>
+        <Header><Spin>{`Round ${roundNumber}`}</Spin></Header>
         <Card>
+          <Flash>
           <GridContainer>
               {artistChoices
                 .map((artist, index) => (
@@ -179,7 +186,10 @@ const Game = () => {
                     <Button onClick={event => handleUserGuess(event.target.innerHTML)} style={{ margin: '10px', backgroundColor: '#08B2E3' }} id={index} >{artist}</Button>
                   </GridItem>))}
             </GridContainer>
+            </Flash>
+            <Jump>
           <Button id='gameButton' onClick = {handlePlaySong}>PLAY SONG</Button>
+          </Jump>
           <div>
   <input type="range" id="volume" name="volume" min="0" max="12"/>
   <label for="volume">Volume</label>
@@ -191,10 +201,12 @@ const Game = () => {
           {gameOver? 
             <ResultPopup className='ResultPopup' style={{backgroundImage: `url(${cassette})`
           }}>
-              <h2>{popup}</h2> <br />
+              <h2><Shake>{popup}</Shake></h2> <br />
               <span style={{ display: "flex" }}>
-                <NavLink style={{textDecoration: 'none'}} to = "/"><Button id='popupButton'  style={{ marginRight: '50px', textDecoration: 'none' }}>Return to Menu</Button></NavLink>
+                <NavLink style={{textDecoration: 'none'}} to = "/"><Tada><Button id='popupButton'  style={{ marginRight: '50px', textDecoration: 'none' }}>Return to Menu</Button></Tada></NavLink>
+                <Tada>
                 <Button id='popupButton' onClick = {resetGame}>Try Again</Button>
+                </Tada>
               </span>
             </ResultPopup>
           : null}

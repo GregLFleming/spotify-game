@@ -1,4 +1,6 @@
 import React, { useEffect, useRef } from 'react'
+import Roll from 'react-reveal/Roll';
+import Flip from 'react-reveal/Flip';
 import Header from '../components/Header.jsx'
 import Card from '../components/Card.jsx'
 import Container from '../components/Container.jsx'
@@ -108,7 +110,9 @@ const Home = () => {
     <div>
       <Container>
           <img src={records} alt='Picture of Record'/>
-        <Header>Welcome To Whos-Who</Header>
+        
+          <Header><Roll right>Welcome To Whos-Who</Roll></Header>
+        <Flip left>
         <Card>
           <Select 
             onChange={event => setSelectedGenre(event.target.value)}
@@ -153,6 +157,7 @@ const Home = () => {
           </Select>
           <NavLink to="/game" style={{textDecoration: 'none'}}><Button style={{backgroundColor: '#49A078'}} onClick = {prepareNewGame}>START</Button></NavLink>
         </Card>
+        </Flip>
       </Container>
     </div>
   )
