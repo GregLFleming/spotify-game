@@ -8,7 +8,7 @@ import Header from '../components/Header.jsx'
 import styled from "styled-components"
 import { displayNumArtists, playSong, selectNArtists, getRandomSong } from '../services/helpers';
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
-import { gameOverAtom, popupAtom, qtySongsAtom, gameStatusAtom, artistChoicesAtom, songsToChooseFromAtom, qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
+import { maxLivesAtom, gameOverAtom, popupAtom, qtySongsAtom, gameStatusAtom, artistChoicesAtom, songsToChooseFromAtom, qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
 import fetchFromSpotify from '../services/api.js'
 import { loadArtists, parseArtists } from '../services/SpotifyQuery.js'
 import { async } from 'regenerator-runtime'
@@ -60,6 +60,7 @@ const Game = () => {
 
   const [popup, setPopup] = useRecoilState(popupAtom)
   const [gameOver, setGameOver] = useRecoilState(gameOverAtom);
+  const [maxLives, setMaxLives] = useRecoilState(maxLivesAtom);
 
 
   useEffect(() => {
@@ -156,7 +157,7 @@ const Game = () => {
   const resetGame = () => {
     const songToGuessIntermediate = getRandomSong(songsToChooseFrom)
     setRoundNumber(1);
-    setLivesRemaining(1);
+    setLivesRemaining(maxLives);
     setSongToGuess(songToGuessIntermediate)
     setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists, songToGuessIntermediate));
     setTimeRemaining(timeLimit);
