@@ -1,18 +1,17 @@
 
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect} from 'react'
 
 import Button from '../components/Button.jsx'
 import Card from '../components/Card.jsx'
 import Container from '../components/Container.jsx'
 import Header from '../components/Header.jsx'
 import styled from "styled-components"
+import { createCountdownTimer, displayNumArtists, playSong, selectNArtists, getRandomSong } from '../services/helpers';
 import Spin from 'react-reveal/Spin';
 import Flash from 'react-reveal/Flash';
 import Jump from 'react-reveal/Jump';
 import Shake from 'react-reveal/Shake';
 import Tada from 'react-reveal/Tada';
-
-import { displayNumArtists, playSong, selectNArtists, getRandomSong } from '../services/helpers';
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
 import { maxLivesAtom, gameOverAtom, popupAtom, qtySongsAtom, gameStatusAtom, artistChoicesAtom, songsToChooseFromAtom, qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
 import fetchFromSpotify from '../services/api.js'
@@ -68,14 +67,12 @@ const Game = () => {
   const [gameOver, setGameOver] = useRecoilState(gameOverAtom);
   const [maxLives, setMaxLives] = useRecoilState(maxLivesAtom);
 
-
   useEffect(() => {
     const artists = JSON.parse(localStorage.getItem('artists'))
     if (artists) {
       setArtists(artists.items.name)
     }
   })
-
   function playSong(url) {
     const sound = new Howl({
       src: [url],
@@ -85,43 +82,35 @@ const Game = () => {
     sound.play()
   }
 
-
-
-  //---------Timer Code---------\\
-  const Ref = useRef(null);
-  useEffect(() => { timer.reset }, []);
-
-  const timer = {
-    start: function (timeOut) {
-      const total = Date.parse(timeOut) - Date.parse(new Date());
-      const seconds = Math.floor((total / 1000) % 60);
-      if (seconds >= 0) {
-        setTimeRemaining(seconds)
-      }
-    },
-
-    reset: function () {
-      let timeOut = new Date();
-
-      timeOut.setSeconds(timeOut.getSeconds() + timeLimit);
-      setTimeRemaining(timeLimit);
-
-      if (Ref.current) {
-        clearInterval(Ref.current);
-      }
-      const id = setInterval(() => { this.start(timeOut) }, 1000)
-      Ref.current = id;
-    }
-  }
-
   const handlePlaySong = () => {
-    timer.reset()
+    timer.current.start()
     console.log(songToGuess)
     playSong(songToGuess.url)
   }
+
   //---------Game Logic---------\\
+
+  //reset timer on first load
+
+  const resetGame = () => {
+    const songToGuessIntermediate = getRandomSong(songsToChooseFrom)
+    setRoundNumber(1);
+    setLivesRemaining(maxLives);
+    setSongToGuess(songToGuessIntermediate)
+    setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists, songToGuessIntermediate));
+    setGameOver(false);
+    setPopup('');
+    timer.current.stop();
+    timer.current.reset();
+  }
+
+  //create a new timer
+  const timer = useRef(createCountdownTimer(timeLimit, setTimeRemaining));
+  
   //Start new rounds when roundNumber is changed
   const startNewRound = () => {
+    timer.current.reset()
+    timer.current.stop()
     const songToGuessIntermediate = getRandomSong(songsToChooseFrom)
     setRoundNumber(parseInt(roundNumber) + 1)
     setSongToGuess(songToGuessIntermediate)
@@ -152,24 +141,14 @@ const Game = () => {
       setLivesRemaining(parseInt(livesRemaining) - 1)
     }
   }
-  useEffect(() => { const volumeSlider = document.getElementById('volume');
-  console.log(volumeSlider)
-  volumeSlider.addEventListener('input', function() {
-    const volume = parseFloat(this.value) / 12.0;
-    Howler.volume(volume);
-  }); }, []);
-
-
-  const resetGame = () => {
-    const songToGuessIntermediate = getRandomSong(songsToChooseFrom)
-    setRoundNumber(1);
-    setLivesRemaining(maxLives);
-    setSongToGuess(songToGuessIntermediate)
-    setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists, songToGuessIntermediate));
-    setTimeRemaining(timeLimit);
-    setGameOver(false);
-    setPopup('');
-  }
+  useEffect(() => {
+    const volumeSlider = document.getElementById('volume');
+    console.log(volumeSlider)
+    volumeSlider.addEventListener('input', function () {
+      const volume = parseFloat(this.value) / 12.0;
+      Howler.volume(volume);
+    });
+  }, []);
 
   //---------JSX---------\\
   return (
@@ -191,9 +170,9 @@ const Game = () => {
           <Button id='gameButton' onClick = {handlePlaySong}>PLAY SONG</Button>
           </Jump>
           <div>
-  <input type="range" id="volume" name="volume" min="0" max="12"/>
-  <label for="volume">Volume</label>
-</div>
+            <input type="range" id="volume" name="volume" min="0" max="12" />
+            <label for="volume">Volume</label>
+          </div>
           <span style={{ display: 'flex', flexDirection: 'row' }}>
             <Button id='gameButton'  style={{ marginRight: '220px', cursor: 'default' }}>Lives Remaining: {livesRemaining}</Button>
             <Button id='gameButton'  style={{ cursor: 'default' }}>Time remaining: {timeRemaining}</Button>
@@ -209,9 +188,7 @@ const Game = () => {
                 </Tada>
               </span>
             </ResultPopup>
-          : null}
-          
-
+            : null}
         </Card>
       </Container>
     </div>

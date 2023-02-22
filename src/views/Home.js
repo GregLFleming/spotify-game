@@ -84,11 +84,6 @@ const Home = () => {
     })
   }, [selectedGenre])
 
-  // const [songs, setSongs] = useRecoilState(songsToChooseFromAtom)
-  // const [artists, setArtists] = useRecoilState(artistsToChooseFromAtom)
-  // const [artistChoices, setArtistChoices] = useRecoilState(artistChoicesAtom)
-  // const [songToGuess, setSongToGuess] = useRecoilState(songToGuessAtom)
-
   //Initialize the state for a new game
   const prepareNewGame = () => {
     const songToGuessIntermediate = getRandomSong(songs)
@@ -96,7 +91,6 @@ const Home = () => {
     setLivesRemaining(maxLives);
     setSongToGuess(songToGuessIntermediate)
     setArtistChoices(selectNArtists(qtyArtistsChosen, artists, songToGuessIntermediate));
-    setTimeRemaining(timeLimit);
     setGameOver(false);
     setPopup('');
   }
