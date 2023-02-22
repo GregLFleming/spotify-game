@@ -141,33 +141,28 @@ const Game = () => {
   //---------Game Logic---------\\
   //Start new rounds when roundNumber is changed
   const startNewRound = () => {
+    const songToGuessIntermediate = getRandomSong(songsToChooseFrom)
     setRoundNumber(parseInt(roundNumber) + 1)
-    setSongToGuess(getRandomSong(songsToChooseFrom))
-    setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists, songToGuess))
+    setSongToGuess(songToGuessIntermediate)
+    setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists, songToGuessIntermediate))
   }
 
-  //monitor game state
-  useEffect(() => {
-    if(livesRemaining < 1 || timeRemaining < 1){
-      setGameStatus("You Lose!!!")
-    }
-    else if(roundNumber > qtySongs){
-      setGameStatus("You Win!!!")
-    }
-    else{
-      setGameStatus("")
-    }
+  // //monitor game state
+  // useEffect(() => {
+  //   if(livesRemaining < 1 || timeRemaining < 1){
+  //     setGameStatus("You Lose!!!")
+  //   }
+  //   else if(roundNumber > qtySongs){
+  //     setGameStatus("You Win!!!")
+  //   }
+  //   else{
+  //     setGameStatus("")
+  //   }
 
-  }, [timeRemaining, livesRemaining]);
+  // }, [timeRemaining, livesRemaining]);
 
   //check user answer
   const handleUserGuess = (userGuess) => {
-    console.log("User Guess:")
-    console.log(userGuess)
-    console.log("Song to guess:")
-    console.log(songToGuess)
-    console.log("Song artist:")
-    console.log(songToGuess.artist)
     if(userGuess === songToGuess.artist){
       console.log("Correct guess!!!")
       startNewRound();
