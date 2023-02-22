@@ -108,10 +108,11 @@ const Home = () => {
           <Header><Roll right>Welcome To Whos-Who</Roll></Header>
         <Flip left>
         <Card>
-          <Select 
+          <Select
+            value = {selectedGenre}
             onChange={event => setSelectedGenre(event.target.value)}
           >
-            <option>Select Your Genre</option>
+            <option disabled = {true}>Select Your Genre</option>
 
             {genres.map(genre => (
               <option key={genre} value={genre}>
@@ -124,7 +125,7 @@ const Home = () => {
             value={qtyArtistsChosen}
             onChange={event => setQtyArtistsChosen(event.target.value)}
           >
-            <option>Artist Choices</option>
+            <option disabled = {true}>Artist Choices</option>
             <option>2</option>
             <option>3</option>
             <option>4</option>
@@ -133,8 +134,8 @@ const Home = () => {
           value={qtySongs}
           onChange={event => setQtySongs(event.target.value)}
           >
-            <option> Number of Songs </option>
-            <option isDisabled = 'true'>1</option>
+            <option disabled = {true}> Number of Songs </option>
+            <option>1</option>
             <option>2</option>
             <option>3</option>
           </Select>
@@ -142,7 +143,7 @@ const Home = () => {
           value={maxLives}
           onChange={event => setMaxLives(event.target.value)}
           >
-            <option>How many lives?</option>
+            <option disabled = {true}>How many lives?</option>
             <option>1</option>
             <option>2</option>
             <option>3</option>
