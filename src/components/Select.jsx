@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const Select = styled.select`
-background-color: grey;
+background-color: #49A078;
 color: black;
 width: 50%;
 height: 75px;

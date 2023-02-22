@@ -5,6 +5,9 @@ import Container from '../components/Container.jsx'
 import Button from '../components/Button.jsx'
 import Select from '../components/Select.jsx'
 import { selectNArtists, getRandomSong } from '../services/helpers';
+import homeStyles from '../styles/homeStyles.css';
+import records from '../assets/records.jpg'
+
 
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
 import { loadArtists, loadGenres, loadSongs, parseArtists, parseSongs } from '../services/SpotifyQuery.js'
@@ -103,9 +106,10 @@ const Home = () => {
   return (
     <div>
       <Container>
+          <img src={records} alt='Picture of Record'/>
         <Header>Welcome To Whos-Who</Header>
         <Card>
-          <Select
+          <Select 
             onChange={event => setSelectedGenre(event.target.value)}
           >
             <option>Select Your Genre</option>
@@ -126,7 +130,7 @@ const Home = () => {
             <option>3</option>
             <option>4</option>
           </Select>
-          <Select
+          <Select 
           value={qtySongs}
           onChange={event => setQtySongs(event.target.value)}
           >
@@ -135,7 +139,18 @@ const Home = () => {
             <option>2</option>
             <option>3</option>
           </Select>
-          <NavLink to="/game"><Button onClick = {prepareNewGame}>START</Button></NavLink>
+          <Select 
+          value={livesRemaining}
+          onChange={event => setLivesRemaining(event.target.value)}
+          >
+            <option>How many lives?</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+          </Select>
+          <NavLink to="/game" style={{textDecoration: 'none'}}><Button style={{backgroundColor: '#49A078'}} onClick = {prepareNewGame}>START</Button></NavLink>
         </Card>
       </Container>
     </div>

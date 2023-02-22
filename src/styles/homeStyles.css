@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css?family=Josefin+Sans');
+
+img{
+    width: 100vw;
+    height: 100vw;
+    object-fit: cover;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+    opacity: 90%;
+}
+Select{
+    box-shadow: rgba(39, 148, 79, 0.4) -5px 5px, 
+    rgba(39, 148, 79, 0.3) -10px 10px, 
+    rgba(39, 148, 79, 0.2) -15px 15px, 
+    rgba(39, 148, 79, 0.1) -20px 20px, 
+    rgba(39, 148, 79, 0.05) -25px 25px;
+    font-family: 'Josefin Sans', cursive;
+}
+Button{
+    font-family: 'Josefin Sans', cursive;
+}
+body {
+    font-family: 'Josefin Sans', cursive;
+  }
