@@ -115,6 +115,10 @@ const Game = () => {
     setRoundNumber(parseInt(roundNumber) + 1)
     setSongToGuess(songToGuessIntermediate)
     setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists, songToGuessIntermediate))
+    let buttons = document.getElementsByClassName('artistChoice')
+      for(let button of buttons){
+        button.disabled = false;
+      }
   }
 
   //monitor game state
@@ -133,8 +137,9 @@ const Game = () => {
 
   //check user answer
   const handleUserGuess = (userGuess) => {
-    if (userGuess === songToGuess.artist) {
-      console.log("Correct guess!!!")
+    console.log(userGuess)
+    userGuess.disabled = true;
+    if (userGuess.innerHTML === songToGuess.artist) {
       startNewRound();
     }
     else {
@@ -162,7 +167,7 @@ const Game = () => {
               {artistChoices
                 .map((artist, index) => (
                   <GridItem key={index}>
-                    <Button onClick={event => handleUserGuess(event.target.innerHTML)} style={{ margin: '10px', backgroundColor: '#08B2E3' }} id={index} >{artist}</Button>
+                    <Button className = "artistChoice" disabled = {false} onClick={event => handleUserGuess(event.target)} style={{ margin: '10px', backgroundColor: '#08B2E3' }} id={index} >{artist}</Button>
                   </GridItem>))}
             </GridContainer>
             </Flash>
