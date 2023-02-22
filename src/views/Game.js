@@ -15,6 +15,9 @@ import { async } from 'regenerator-runtime'
 import { initial } from 'lodash'
 import ResultPopup from '../components/ResultPopup.jsx'
 import { NavLink } from 'react-router-dom'
+import guitarist from '../assets/guitarist.jpg';
+import cassette from '../assets/cassette.jpg';
+import gameStyles from '../styles/gameStyles.css';
 
 //----------------Styling----------------\\
 const GridContainer = styled.div`{}
@@ -58,20 +61,6 @@ const Game = () => {
   const [popup, setPopup] = useRecoilState(popupAtom)
   const [gameOver, setGameOver] = useRecoilState(gameOverAtom);
 
-  // useEffect(() => {
-  //   if (timeRemaining <= 0) {
-  //     setGameOver(!gameOver)
-  //   }
-  //   if (livesRemaining < 1) {
-  //     setGameOver(!gameOver)
-  //   }
-  // }, [setGameOver])
-
-  // useEffect(() => {
-  //   if (gameOver) {
-  //     setPopup(!popup)
-  //   }
-  // }, [setPopup]);
 
   useEffect(() => {
     const artists = JSON.parse(localStorage.getItem('artists'))
@@ -79,22 +68,6 @@ const Game = () => {
       setArtists(artists.items.name)
     }
   })
-
-  // const getArtists = async () => {
-  //   const artistRequest = await fetchFromSpotify({
-  //     token,
-  //     endpoint: `artists/${songToGuess.chosenArtists[0].id}`
-  //   });
-
-  //   const artistResponse = await fetchFromSpotify({
-  //     token,
-  //     endpoint: `artists/${songToGuess.chosenArtists[0].id}/related-artists`,
-  //   });
-  //   setChosenArtists(
-  //     randomizer(artistResponse.chosenArtists, config.retrievedArtists - 1).map((a) => ({ correct: false, a })).concat([{ correct: true, artistRequest }]).sort(() => Math.random() - 0.5)
-  //   )
-  // }
-
 
   function playSong(url) {
     const sound = new Howl({
@@ -148,18 +121,15 @@ const Game = () => {
     setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists, songToGuessIntermediate))
   }
 
-  // const [popup, setPopup] = useRecoilState(popupAtom)
-  // const [gameOver, setGameOver] = useRecoilState(gameOverAtom);
-
   //monitor game state
   useEffect(() => {
     if (livesRemaining < 1 || timeRemaining < 1) {
       console.log("Lose condition reached")
-      setPopup("You Lose!!!")
+      setPopup("Oops, you dropped that one.")
       setGameOver(true)
     }
     else if (roundNumber > qtySongs) {
-      setPopup("You Win!!!")
+      setPopup("Rock on, You won!!!")
       setGameOver(true)
     }
 
@@ -198,30 +168,32 @@ const Game = () => {
   return (
     <div>
       <Container>
+        <img src={guitarist} alt='Picture of guitarist'/>
         <Header>Round {roundNumber}</Header>
         <Card>
           <GridContainer>
               {artistChoices
                 .map((artist, index) => (
                   <GridItem key={index}>
-                    <Button onClick={event => handleUserGuess(event.target.innerHTML)} style={{ margin: '10px' }} id={index}>{artist}</Button>
+                    <Button onClick={event => handleUserGuess(event.target.innerHTML)} style={{ margin: '10px', backgroundColor: '#08B2E3' }} id={index} >{artist}</Button>
                   </GridItem>))}
             </GridContainer>
-          <Button onClick = {handlePlaySong}>PLAY SONG</Button>
+          <Button id='gameButton' onClick = {handlePlaySong}>PLAY SONG</Button>
           <div>
   <input type="range" id="volume" name="volume" min="0" max="12"/>
   <label for="volume">Volume</label>
 </div>
           <span style={{ display: 'flex', flexDirection: 'row' }}>
-            <Button style={{ marginRight: '220px', cursor: 'default' }}>Lives Remaining: {livesRemaining}</Button>
-            <Button style={{ cursor: 'default' }}>Time remaining: {timeRemaining}</Button>
+            <Button id='gameButton'  style={{ marginRight: '220px', cursor: 'default' }}>Lives Remaining: {livesRemaining}</Button>
+            <Button id='gameButton'  style={{ cursor: 'default' }}>Time remaining: {timeRemaining}</Button>
           </span>
           {gameOver? 
-            <ResultPopup>
+            <ResultPopup className='ResultPopup' style={{backgroundImage: `url(${cassette})`
+          }}>
               <h2>{popup}</h2> <br />
               <span style={{ display: "flex" }}>
-                <NavLink to = "/"><Button style={{ marginRight: '50px' }}>Return to Menu</Button></NavLink>
-                <Button onClick = {resetGame}>Try Again</Button>
+                <NavLink style={{textDecoration: 'none'}} to = "/"><Button id='popupButton'  style={{ marginRight: '50px', textDecoration: 'none' }}>Return to Menu</Button></NavLink>
+                <Button id='popupButton' onClick = {resetGame}>Try Again</Button>
               </span>
             </ResultPopup>
           : null}

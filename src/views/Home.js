@@ -6,7 +6,7 @@ import Button from '../components/Button.jsx'
 import Select from '../components/Select.jsx'
 import { selectNArtists, getRandomSong } from '../services/helpers';
 import homeStyles from '../styles/homeStyles.css';
-import records from '../assets/records.jpg'
+import records from '../assets/records.jpg';
 
 
 import { useRecoilState } from 'recoil' //needed to manage state with recoil
