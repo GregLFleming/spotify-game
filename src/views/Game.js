@@ -106,6 +106,7 @@ const Game = () => {
   }
 
 
+
   //---------Timer Code---------\\
   const Ref = useRef(null);
   useEffect(() => { timer.reset }, []);
@@ -174,6 +175,13 @@ const Game = () => {
       setLivesRemaining(parseInt(livesRemaining) - 1)
     }
   }
+  useEffect(() => { const volumeSlider = document.getElementById('volume');
+  console.log(volumeSlider)
+  volumeSlider.addEventListener('input', function() {
+    const volume = parseFloat(this.value) / 12.0;
+    Howler.volume(volume);
+  }); }, []);
+
 
   const resetGame = () => {
     const songToGuessIntermediate = getRandomSong(songsToChooseFrom)
@@ -193,13 +201,17 @@ const Game = () => {
         <Header>Round {roundNumber}</Header>
         <Card>
           <GridContainer>
-            {artistChoices
-              .map((artist, index) => (
-                <GridItem key={index}>
-                  <Button onClick={event => handleUserGuess(event.target.innerHTML)} style={{ margin: '10px' }} id={index}>{artist}</Button>
-                </GridItem>))}
-          </GridContainer>
-          <Button onClick={handlePlaySong}>PLAY SONG</Button>
+              {artistChoices
+                .map((artist, index) => (
+                  <GridItem key={index}>
+                    <Button onClick={event => handleUserGuess(event.target.innerHTML)} style={{ margin: '10px' }} id={index}>{artist}</Button>
+                  </GridItem>))}
+            </GridContainer>
+          <Button onClick = {handlePlaySong}>PLAY SONG</Button>
+          <div>
+  <input type="range" id="volume" name="volume" min="0" max="12"/>
+  <label for="volume">Volume</label>
+</div>
           <span style={{ display: 'flex', flexDirection: 'row' }}>
             <Button style={{ marginRight: '220px', cursor: 'default' }}>Lives Remaining: {livesRemaining}</Button>
             <Button style={{ cursor: 'default' }}>Time remaining: {timeRemaining}</Button>
