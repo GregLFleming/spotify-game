@@ -76,3 +76,13 @@ export const songToGuessAtom = atom({
     key: 'songToGuess',
     default: {}
 });
+
+export const artistChoicesAtom = atom({
+    key: 'artistChoices',
+    default: []
+});
+
+export const gameStatusAtom = atom({
+    key: 'gameStatus',
+    default: ''
+});
