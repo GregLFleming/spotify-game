@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect } from 'react'
 import Roll from 'react-reveal/Roll';
 import Flip from 'react-reveal/Flip';
 import Header from '../components/Header.jsx'
@@ -9,12 +9,9 @@ import Select from '../components/Select.jsx'
 import { selectNArtists, getRandomSong } from '../services/helpers';
 import homeStyles from '../styles/homeStyles.css';
 import records from '../assets/records.jpg';
-
-
-import { useRecoilState } from 'recoil' //needed to manage state with recoil
+import { useRecoilState, useSetRecoilState } from 'recoil'
 import { loadArtists, loadGenres, loadSongs, parseArtists, parseSongs } from '../services/SpotifyQuery.js'
 import { request } from '../services/api'
-
 import { maxLivesAtom, roundNumberAtom, popupAtom, gameOverAtom, songToGuessAtom, artistChoicesAtom, artistsToChooseFromAtom, songsToChooseFromAtom, timeLimitAtom, timeRemainingAtom, qtySongsAtom, qtyArtistsChosenAtom, genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom, livesRemainingAtom } from '../recoil/atoms' //individual value you need access to
 import { NavLink } from 'react-router-dom'
 
@@ -25,31 +22,27 @@ const TOKEN_KEY = 'whos-who-access-token'
 const Home = () => {
 
   //---------Recoil State Storage---------\\
-  const [genres, setGenres] = useRecoilState(genresToChooseFromAtom)
-  const [selectedGenre, setSelectedGenre] = useRecoilState(genreSelectedAtom)
-  const [authLoading, setAuthLoading] = useRecoilState(tokenAuthorizationLoadingAtom)
+  //API Fetch
   const [configLoading, setConfigLoading] = useRecoilState(configLoadingAtom)
-  const [token, setToken] = useRecoilState(tokenAtom)
-  
-  
+  const [genres, setGenres] = useRecoilState(genresToChooseFromAtom)
+  const [authLoading, setAuthLoading] = useRecoilState(tokenAuthorizationLoadingAtom)
+  const setToken = useSetRecoilState(tokenAtom)
+
+  //User Inputs
+  const [selectedGenre, setSelectedGenre] = useRecoilState(genreSelectedAtom)
+  const [maxLives, setMaxLives] = useRecoilState(maxLivesAtom);
   const [qtyArtistsChosen, setQtyArtistsChosen] = useRecoilState(qtyArtistsChosenAtom)
   const [qtySongs, setQtySongs] = useRecoilState(qtySongsAtom )
-  const [timeLimit, setTimeLimit] = useRecoilState(timeLimitAtom)
-  const [livesRemaining, setLivesRemaining] = useRecoilState(livesRemainingAtom)
-  
-  const [timeRemaining, setTimeRemaining] = useRecoilState(timeRemainingAtom)
-  
+
+  //Game State
   const [songs, setSongs] = useRecoilState(songsToChooseFromAtom)
   const [artists, setArtists] = useRecoilState(artistsToChooseFromAtom)
-  const [artistChoices, setArtistChoices] = useRecoilState(artistChoicesAtom)
-  const [songToGuess, setSongToGuess] = useRecoilState(songToGuessAtom)
-  const [roundNumber, setRoundNumber] = useRecoilState(roundNumberAtom)
-
-  const [popup, setPopup] = useRecoilState(popupAtom)
-  const [gameOver, setGameOver] = useRecoilState(gameOverAtom);
-  const [maxLives, setMaxLives] = useRecoilState(maxLivesAtom);
-  
-
+  const setArtistChoices = useSetRecoilState(artistChoicesAtom)
+  const setSongToGuess = useSetRecoilState(songToGuessAtom)
+  const setRoundNumber = useSetRecoilState(roundNumberAtom)
+  const setPopup = useSetRecoilState(popupAtom)
+  const setGameOver = useSetRecoilState(gameOverAtom);
+  const setLivesRemaining = useSetRecoilState(livesRemainingAtom)
 
   //---------Initial Loading---------\\
   useEffect(() => {

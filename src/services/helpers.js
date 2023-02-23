@@ -20,13 +20,13 @@ export const getRandomInt = (maxValue) => {
 export const selectNArtists = (qtyArtistsChosen, artists, songToGuess) => {
   let n = parseInt(qtyArtistsChosen)
 
-  //put correct answer into the array of length n
+  //Put correct answer into the array of length n
   let nChoices = Array(n)
   const resultLocation = getRandomInt(n - 1)
   nChoices[resultLocation] = songToGuess.artist
 
   let i = 0
-  //populate all remaining indecies of array with random artists
+  //Populate all remaining indicies of array with random artists
   while (i < n) {
     if (i != resultLocation) {
       nChoices[i] = artists[getRandomInt(artists.length - 1)]
