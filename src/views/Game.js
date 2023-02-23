@@ -103,8 +103,16 @@ const Game = () => {
 
   const handlePlaySong = () => {
     timer.current.start()
-    console.log(songToGuess)
-    playSong(songToGuess.url)
+    if(sound && sound.playing()){
+        sound.pause()
+    }
+    else if (sound){
+      sound.play()
+    }
+    else{
+      console.log(songToGuess)
+      playSong(songToGuess.url)
+    }
   }
 
   //---------Game Logic---------\\
