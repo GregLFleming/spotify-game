@@ -14,17 +14,19 @@ export const loadGenres = async (t, setGenres) => {
         token: t,
         endpoint: 'recommendations/available-genre-seeds'
     })
-    console.log(response)
+    // console.log(response)
     setGenres(response.genres)
     //setConfigLoading(false)
     return response.genres
 }
 
+//get a bunch of songs of this genre
 export const loadSongs = async (t, genre) => {
     const response = await fetchFromSpotify({
         token: t,
-        endpoint: `search?q=genre%3A${genre}&type=track`
+        endpoint: `search?q=${genre}&type=track&limit=50`
     })
+    console.log("This is the genre response:")
     console.log(response)
     return response.tracks.items
 }
@@ -41,7 +43,7 @@ export const parseSongs = (songListPromise, setSongs) => {
     });
 }
 
-const destructureSong = track => ({
+export const destructureSong = track => ({
     trackName: track.name, artist: track.artists[0].name, url: track.preview_url
 })
 
@@ -51,6 +53,7 @@ export const loadArtists = async (t, genre) => {
         token: t,
         endpoint: `search?q=genre%3A${genre}&type=artist`
     })
+    console.log("This is the artist response:")
     console.log(response)
     return response.artists.items
 }
