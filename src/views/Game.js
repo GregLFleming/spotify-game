@@ -65,12 +65,12 @@ const Game = () => {
   const qtySongs = useRecoilValue(qtySongsAtom)
   const maxLives = useRecoilValue(maxLivesAtom);
 
-  useEffect(() => {
-    const artists = JSON.parse(localStorage.getItem('artists'))
-    if (artists) {
-      setArtists(artists.items.name)
-    }
-  })
+  // useEffect(() => {
+  //   const artists = JSON.parse(localStorage.getItem('artists'))
+  //   if (artists) {
+  //     setArtists(artists.items.name)
+  //   }
+  // })
   
   function playSong(url) {
     const sound = new Howl({
@@ -136,7 +136,6 @@ const Game = () => {
     console.log(userGuess)
     userGuess.disabled = true;
     if (userGuess.innerHTML === songToGuess.artist) {
-      sound.stop();
       startNewRound();
     }
     else {
