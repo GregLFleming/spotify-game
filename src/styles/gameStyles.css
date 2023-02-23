@@ -1,0 +1,48 @@
+
+#gameButton{
+    box-shadow: rgba(18, 199, 235, 0.4) -5px 5px, 
+    rgba(18, 199, 235, 0.3) -10px 10px, 
+    rgba(18, 199, 235, 0.2) -15px 15px, 
+    rgba(18, 199, 235, 0.1) -20px 20px, 
+    rgba(18, 199, 235, 0.05) -25px 25px;
+    font-family: 'Josefin Sans', cursive;
+    background-color: #08B2E3;
+}
+
+#gameButton:disabled{
+    background-color: #909293;
+}
+
+.artistChoice{
+    margin: '10px';
+    background-color: #08B2E3; 
+}
+
+.artistChoice:disabled{
+    font-family: 'Josefin Sans', cursive;
+    background-color: #909293;
+}
+
+.ResultPopup{
+    background-size: cover;
+}
+.ResultPopup h2{
+    color: white;
+    font-size: 1.8em;
+    
+}
+#popupButton{
+    box-shadow: rgba(235, 94, 12, 0.4) -5px 5px, 
+    rgba(235, 94, 12,  0.3) -10px 10px, 
+    rgba(235, 94, 12,  0.2) -15px 15px, 
+    rgba(235, 94, 12,  0.1) -20px 20px, 
+    rgba(235, 94, 12,  0.05) -25px 25px;
+    font-family: 'Josefin Sans', cursive;
+    background-color: #CF5C36;
+}
+
+.wrongChoice{
+    font-size: 1.9em;
+    height: 1px;
+    color: Red;
+}

@@ -1,7 +1,8 @@
 import styled from "styled-components";
 
-export const Select = styled.select`
-background-color: #49A078;
+export const Input = styled.input`
+type: number;
+background-color: grey;
 color: black;
 width: 50%;
 height: 75px;
@@ -12,4 +13,4 @@ cursor: pointer;
 text-align: center;
 `;
 
-export default Select;
+export default Input;
