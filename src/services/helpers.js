@@ -1,8 +1,4 @@
 import Howl from 'howler'
-import { useRef, useEffect } from 'react'
-import { timeRemainingAtom, timeLimitAtom } from '../recoil/atoms'
-import { useRecoilState } from 'recoil'
-
 
 export const checkUserGuess = (userGuess, correctAnswer) => {
   return (correctAnswer.artistName === userGuess)

@@ -24,6 +24,7 @@ import guitarist from '../assets/guitarist.jpg';
 import cassette from '../assets/cassette.jpg';
 import gameStyles from '../styles/gameStyles.css';
 
+
 //----------------Styling----------------\\
 const GridContainer = styled.div`{}
 margin: 20px auto;
@@ -51,7 +52,7 @@ const Game = () => {
   const [timeRemaining, setTimeRemaining] = useRecoilState(timeRemainingAtom)
   const [songToGuess, setSongToGuess] = useRecoilState(songToGuessAtom)
 
-  //Internal state
+  //Internal State
   const songsToChooseFrom = useRecoilValue(songsToChooseFromAtom)
   const artistsToChooseFrom = useRecoilValue(artistsToChooseFromAtom) //list of all artists in genre
   const [artistChoices, setArtistChoices] = useRecoilState(artistChoicesAtom) //options presented to user
@@ -120,7 +121,6 @@ const Game = () => {
   //Check for end game conditions
   useEffect(() => {
     if (livesRemaining < 1 || timeRemaining < 1) {
-      console.log("Lose condition reached")
       setPopup("Oops, you dropped that one.")
       setGameOver(true)
     }
@@ -136,6 +136,7 @@ const Game = () => {
     console.log(userGuess)
     userGuess.disabled = true;
     if (userGuess.innerHTML === songToGuess.artist) {
+      sound.stop();
       startNewRound();
     }
     else {
@@ -174,7 +175,7 @@ const Game = () => {
           </Jump>
           <div>
             <input type="range" id="volume" name="volume" min="0" max="12" />
-            <label for="volume">Volume</label>
+            <label>Volume</label>
           </div>
           <span style={{ display: 'flex', flexDirection: 'row' }}>
             <Button id='gameButton'  style={{ marginRight: '220px', cursor: 'default' }}>Lives Remaining: {livesRemaining}</Button>
