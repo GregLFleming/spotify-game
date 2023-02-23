@@ -12,6 +12,7 @@ import Flash from 'react-reveal/Flash';
 import Jump from 'react-reveal/Jump';
 import Shake from 'react-reveal/Shake';
 import Tada from 'react-reveal/Tada';
+import Slide from 'react-reveal/Slide';
 import { useRecoilState, useRecoilValue } from 'recoil' //needed to manage state with recoil
 import { maxLivesAtom, gameOverAtom, popupAtom, qtySongsAtom, gameStatusAtom, artistChoicesAtom, songsToChooseFromAtom, qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
 import fetchFromSpotify from '../services/api.js'
@@ -41,9 +42,6 @@ align-items:center;
 justify-content:center;
 `
 
-const randomizer = (arr, count) => arr.sort(() => Math.random() - 0.5).slice(0, count);
-
-
 const Game = () => {
   //---------Recoil State Storage---------\\
   //Game Mechanics
@@ -59,6 +57,7 @@ const Game = () => {
   const [popup, setPopup] = useRecoilState(popupAtom)
   const [gameOver, setGameOver] = useRecoilState(gameOverAtom);
   const [sound, setSound] = useState(null);
+  const [wrong, setWrong] = useState(false);
   
   //Settings Selected By User
   const timeLimit = useRecoilValue(timeLimitAtom)
@@ -134,6 +133,7 @@ const Game = () => {
     setRoundNumber(parseInt(roundNumber) + 1)
     setSongToGuess(songToGuessIntermediate)
     setArtistChoices(selectNArtists(qtyArtistsChosen, artistsToChooseFrom, songToGuessIntermediate))
+    setWrong(false)
     document.getElementById("gameButton").disabled = false;
     let buttons = document.getElementsByClassName('artistChoice')
       for(let button of buttons){
@@ -166,6 +166,7 @@ const Game = () => {
     }
     else {
       setLivesRemaining(parseInt(livesRemaining) - 1)
+      setWrong(true);
     }
   }
 
@@ -175,6 +176,9 @@ const Game = () => {
       <Container>
         <img src={guitarist} alt='Picture of guitarist'/>
         <Header><Spin>{`Round ${roundNumber}`}</Spin></Header>
+            {
+              wrong === true ? <h2 className='wrongChoice'><Shake>Wrong Choice, Guess again!</Shake></h2> : <span></span>
+            }
         <Card>
           <Flash>
           <GridContainer>

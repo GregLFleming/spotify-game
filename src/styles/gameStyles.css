@@ -1,16 +1,4 @@
 
-/* img{
-    width: 100vw;
-    height: 100vw;
-    object-fit: cover;
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    z-index: -1;
-    opacity: 90%;
-} */
 #gameButton{
     box-shadow: rgba(18, 199, 235, 0.4) -5px 5px, 
     rgba(18, 199, 235, 0.3) -10px 10px, 
@@ -36,4 +24,10 @@
     rgba(235, 94, 12,  0.05) -25px 25px;
     font-family: 'Josefin Sans', cursive;
     background-color: #CF5C36;
+}
+
+.wrongChoice{
+    font-size: 1.9em;
+    height: 1px;
+    color: Red;
 }
