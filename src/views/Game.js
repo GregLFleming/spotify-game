@@ -104,17 +104,22 @@ const Game = () => {
   const handlePlaySong = () => {
     timer.current.start()
     document.getElementById("gameButton").disabled = true;
-    console.log(songToGuess)
     playSong(songToGuess.url)
   }
 
   //---------Game Logic---------\\
-  //create a new timer
+  //create a new timer only if one does nto alredy exist
   const timer = timer ? timer : useRef(createCountdownTimer(timeLimit, setTimeRemaining));
 
   //reset game state
   const resetGame = () => {
+    //enable all buttons
     document.getElementById("gameButton").disabled = false;
+    let buttons = document.getElementsByClassName('artistChoice')
+      for(let button of buttons){
+        button.disabled = false;
+      }
+
     const songToGuessIntermediate = getRandomSong(songsToChooseFrom)
     setRoundNumber(1);
     setLivesRemaining(maxLives);
@@ -128,27 +133,34 @@ const Game = () => {
 
   //Start new rounds when roundNumber is changed
   const startNewRound = () => {
-    timer.current.reset()
-    timer.current.stop()
-    const songToGuessIntermediate = getRandomSong(songsToChooseFrom)
-    setRoundNumber(parseInt(roundNumber) + 1)
-    setSongToGuess(songToGuessIntermediate)
-    setArtistChoices(selectNArtists(qtyArtistsChosen, artistsToChooseFrom, songToGuessIntermediate))
+    //reset all buttons
     document.getElementById("gameButton").disabled = false;
     let buttons = document.getElementsByClassName('artistChoice')
       for(let button of buttons){
         button.disabled = false;
       }
+    
+    timer.current.stop()
+    timer.current.reset()
+
+    const songToGuessIntermediate = getRandomSong(songsToChooseFrom)
+    setRoundNumber(parseInt(roundNumber) + 1)
+    setSongToGuess(songToGuessIntermediate)
+    setArtistChoices(selectNArtists(qtyArtistsChosen, artistsToChooseFrom, songToGuessIntermediate))
   }
 
   //Check for end game conditions
   useEffect(() => {
     if (livesRemaining < 1 || timeRemaining < 1) {
+      timer.current.stop()
+      timer.current.reset()
       sound.stop()
       setPopup("Oops, you dropped that one.")
       setGameOver(true)
     }
     else if (roundNumber > qtySongs) {
+      timer.current.stop()
+      timer.current.reset()
       setRoundNumber(qtySongs)
       setPopup("Rock on, You won!!!")
       setGameOver(true)
