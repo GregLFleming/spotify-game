@@ -58,6 +58,7 @@ const Game = () => {
   const [artistChoices, setArtistChoices] = useRecoilState(artistChoicesAtom) //options presented to user
   const [popup, setPopup] = useRecoilState(popupAtom)
   const [gameOver, setGameOver] = useRecoilState(gameOverAtom);
+  const [sound, setSound] = useState(null);
   
   //Settings Selected By User
   const timeLimit = useRecoilValue(timeLimitAtom)
@@ -65,8 +66,18 @@ const Game = () => {
   const qtySongs = useRecoilValue(qtySongsAtom)
   const maxLives = useRecoilValue(maxLivesAtom);
 
-  const [sound, setSound] = useState(null);
   
+  
+  //Controls for howler
+  useEffect(() => {
+    const volumeSlider = document.getElementById('volume');
+    console.log(volumeSlider)
+    volumeSlider.addEventListener('input', function () {
+      const volume = parseFloat(this.value) / 12.0;
+      Howler.volume(volume);
+    });
+  }, []);
+
   function playSong(url) {
     setSound(new Howl({
       src: [url],
@@ -89,8 +100,6 @@ const Game = () => {
       };
     }
   }, [sound]);
-
-
 
   const handlePlaySong = () => {
     timer.current.start()
@@ -132,10 +141,12 @@ const Game = () => {
   //Check for end game conditions
   useEffect(() => {
     if (livesRemaining < 1 || timeRemaining < 1) {
+      sound.stop()
       setPopup("Oops, you dropped that one.")
       setGameOver(true)
     }
     else if (roundNumber > qtySongs) {
+      setRoundNumber(qtySongs)
       setPopup("Rock on, You won!!!")
       setGameOver(true)
     }
@@ -154,16 +165,6 @@ const Game = () => {
       setLivesRemaining(parseInt(livesRemaining) - 1)
     }
   }
-
-  //Controls for howler
-  useEffect(() => {
-    const volumeSlider = document.getElementById('volume');
-    console.log(volumeSlider)
-    volumeSlider.addEventListener('input', function () {
-      const volume = parseFloat(this.value) / 12.0;
-      Howler.volume(volume);
-    });
-  }, []);
 
   //---------JSX---------\\
   return (
