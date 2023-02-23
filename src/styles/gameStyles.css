@@ -8,6 +8,21 @@
     font-family: 'Josefin Sans', cursive;
     background-color: #08B2E3;
 }
+
+#gameButton:disabled{
+    background-color: #909293;
+}
+
+.artistChoice{
+    margin: '10px';
+    background-color: #08B2E3; 
+}
+
+.artistChoice:disabled{
+    font-family: 'Josefin Sans', cursive;
+    background-color: #909293;
+}
+
 .ResultPopup{
     background-size: cover;
 }

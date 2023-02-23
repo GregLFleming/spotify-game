@@ -197,7 +197,7 @@ const Game = () => {
               {artistChoices
                 .map((artist, index) => (
                   <GridItem key={index}>
-                    <Button className = "artistChoice" disabled = {false} onClick={event => handleUserGuess(event.target)} style={{ margin: '10px', backgroundColor: '#08B2E3' }} id={index} >{artist}</Button>
+                    <Button className = "artistChoice" onClick={event => handleUserGuess(event.target)} id={index} >{artist}</Button>
                   </GridItem>))}
             </GridContainer>
             </Flash>
