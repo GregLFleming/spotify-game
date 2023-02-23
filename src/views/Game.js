@@ -221,7 +221,7 @@ const Game = () => {
           }}>
               <h2><Shake>{popup}</Shake></h2> <br />
               <span style={{ display: "flex" }}>
-                <NavLink style={{textDecoration: 'none'}} to = "/"><Tada><Button id='popupButton'  style={{ marginRight: '50px', textDecoration: 'none' }}>Return to Menu</Button></Tada></NavLink>
+                <NavLink onClick = {resetGame} style={{textDecoration: 'none'}} to = "/"><Tada><Button id='popupButton'  style={{ marginRight: '50px', textDecoration: 'none' }}>Return to Menu</Button></Tada></NavLink>
                 <Tada>
                 <Button id='popupButton' onClick = {resetGame}>Try Again</Button>
                 </Tada>
