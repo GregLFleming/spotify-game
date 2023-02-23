@@ -103,16 +103,18 @@ const Game = () => {
 
   const handlePlaySong = () => {
     timer.current.start()
+    document.getElementById("gameButton").disabled = true;
     console.log(songToGuess)
     playSong(songToGuess.url)
   }
 
   //---------Game Logic---------\\
   //create a new timer
-  const timer = useRef(createCountdownTimer(timeLimit, setTimeRemaining));
+  const timer = timer ? timer : useRef(createCountdownTimer(timeLimit, setTimeRemaining));
 
   //reset game state
   const resetGame = () => {
+    document.getElementById("gameButton").disabled = false;
     const songToGuessIntermediate = getRandomSong(songsToChooseFrom)
     setRoundNumber(1);
     setLivesRemaining(maxLives);
@@ -132,6 +134,7 @@ const Game = () => {
     setRoundNumber(parseInt(roundNumber) + 1)
     setSongToGuess(songToGuessIntermediate)
     setArtistChoices(selectNArtists(qtyArtistsChosen, artistsToChooseFrom, songToGuessIntermediate))
+    document.getElementById("gameButton").disabled = false;
     let buttons = document.getElementsByClassName('artistChoice')
       for(let button of buttons){
         button.disabled = false;
@@ -183,7 +186,7 @@ const Game = () => {
             </GridContainer>
             </Flash>
             <Jump>
-          <Button id='gameButton' onClick = {handlePlaySong}>PLAY SONG</Button>
+          <Button id='gameButton' onClick = {handlePlaySong}>BEGIN ROUND</Button>
           </Jump>
           <div>
             <input type="range" id="volume" name="volume" min="0" max="12" />
