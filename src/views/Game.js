@@ -183,7 +183,7 @@ const Game = () => {
             </GridContainer>
             </Flash>
             <Jump>
-          <Button id='gameButton' onClick = {handlePlaySong}>PLAY SONG</Button>
+          <Button id='gameButton' onClick = {handlePlaySong}>BEGIN ROUND</Button>
           </Jump>
           <div>
             <input type="range" id="volume" name="volume" min="0" max="12" />
