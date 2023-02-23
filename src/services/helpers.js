@@ -22,10 +22,16 @@ export const selectNArtists = (qtyArtistsChosen, artists, songToGuess) => {
   nChoices[resultLocation] = songToGuess.artist
 
   let i = 0
+  let choiceToAdd
   //Populate all remaining indicies of array with random artists
   while (i < n) {
     if (i != resultLocation) {
-      nChoices[i] = artists[getRandomInt(artists.length - 1)]
+      do{
+        choiceToAdd = artists[getRandomInt(artists.length - 1)]
+      }
+      while(nChoices.includes(choiceToAdd))
+
+      nChoices[i] = choiceToAdd
     }
     i += 1;
   }

@@ -58,6 +58,7 @@ const Game = () => {
   const [artistChoices, setArtistChoices] = useRecoilState(artistChoicesAtom) //options presented to user
   const [popup, setPopup] = useRecoilState(popupAtom)
   const [gameOver, setGameOver] = useRecoilState(gameOverAtom);
+  const [sound, setSound] = useState(null);
   
   //Settings Selected By User
   const timeLimit = useRecoilValue(timeLimitAtom)
@@ -65,8 +66,18 @@ const Game = () => {
   const qtySongs = useRecoilValue(qtySongsAtom)
   const maxLives = useRecoilValue(maxLivesAtom);
 
-  const [sound, setSound] = useState(null);
   
+  
+  //Controls for howler
+  useEffect(() => {
+    const volumeSlider = document.getElementById('volume');
+    console.log(volumeSlider)
+    volumeSlider.addEventListener('input', function () {
+      const volume = parseFloat(this.value) / 12.0;
+      Howler.volume(volume);
+    });
+  }, []);
+
   function playSong(url) {
     setSound(new Howl({
       src: [url],
@@ -90,28 +101,20 @@ const Game = () => {
     }
   }, [sound]);
 
-
-
   const handlePlaySong = () => {
     timer.current.start()
-    if(sound && sound.playing()){
-        sound.pause()
-    }
-    else if (sound){
-      sound.play()
-    }
-    else{
-      console.log(songToGuess)
-      playSong(songToGuess.url)
-    }
+    document.getElementById("gameButton").disabled = true;
+    console.log(songToGuess)
+    playSong(songToGuess.url)
   }
 
   //---------Game Logic---------\\
   //create a new timer
-  const timer = useRef(createCountdownTimer(timeLimit, setTimeRemaining));
+  const timer = timer ? timer : useRef(createCountdownTimer(timeLimit, setTimeRemaining));
 
   //reset game state
   const resetGame = () => {
+    document.getElementById("gameButton").disabled = false;
     const songToGuessIntermediate = getRandomSong(songsToChooseFrom)
     setRoundNumber(1);
     setLivesRemaining(maxLives);
@@ -131,6 +134,7 @@ const Game = () => {
     setRoundNumber(parseInt(roundNumber) + 1)
     setSongToGuess(songToGuessIntermediate)
     setArtistChoices(selectNArtists(qtyArtistsChosen, artistsToChooseFrom, songToGuessIntermediate))
+    document.getElementById("gameButton").disabled = false;
     let buttons = document.getElementsByClassName('artistChoice')
       for(let button of buttons){
         button.disabled = false;
@@ -140,10 +144,12 @@ const Game = () => {
   //Check for end game conditions
   useEffect(() => {
     if (livesRemaining < 1 || timeRemaining < 1) {
+      sound.stop()
       setPopup("Oops, you dropped that one.")
       setGameOver(true)
     }
     else if (roundNumber > qtySongs) {
+      setRoundNumber(qtySongs)
       setPopup("Rock on, You won!!!")
       setGameOver(true)
     }
@@ -163,16 +169,6 @@ const Game = () => {
     }
   }
 
-  //Controls for howler
-  useEffect(() => {
-    const volumeSlider = document.getElementById('volume');
-    console.log(volumeSlider)
-    volumeSlider.addEventListener('input', function () {
-      const volume = parseFloat(this.value) / 12.0;
-      Howler.volume(volume);
-    });
-  }, []);
-
   //---------JSX---------\\
   return (
     <div>
@@ -190,7 +186,7 @@ const Game = () => {
             </GridContainer>
             </Flash>
             <Jump>
-          <Button id='gameButton' onClick = {handlePlaySong}>PLAY SONG</Button>
+          <Button id='gameButton' onClick = {handlePlaySong}>BEGIN ROUND</Button>
           </Jump>
           <div>
             <input type="range" id="volume" name="volume" min="0" max="12" />

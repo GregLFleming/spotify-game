@@ -10,7 +10,7 @@ import { selectNArtists, getRandomSong } from '../services/helpers';
 import homeStyles from '../styles/homeStyles.css';
 import records from '../assets/records.jpg';
 import { useRecoilState, useSetRecoilState } from 'recoil'
-import { loadArtists, loadGenres, loadSongs, parseArtists, parseSongs } from '../services/SpotifyQuery.js'
+import { loadArtists, loadGenres, loadSongs, parseArtists, parseSongs, destructureSong } from '../services/SpotifyQuery.js'
 import { request } from '../services/api'
 import { maxLivesAtom, roundNumberAtom, popupAtom, gameOverAtom, songToGuessAtom, artistChoicesAtom, artistsToChooseFromAtom, songsToChooseFromAtom, timeLimitAtom, timeRemainingAtom, qtySongsAtom, qtyArtistsChosenAtom, genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom, livesRemainingAtom } from '../recoil/atoms' //individual value you need access to
 import { NavLink } from 'react-router-dom'
@@ -55,12 +55,33 @@ const Home = () => {
         setAuthLoading(false)
         setToken(storedToken.value)
 
-        //problem is returns promise and loading var doesn't wait
-        //setConfigLoading(false)
+        //Load all genres from Spotify
         loadGenres(storedToken.value, setGenres)
-        //setConfigLoading(false)
-        parseSongs(loadSongs(storedToken.value, selectedGenre), setSongs)
-        parseArtists(loadArtists(storedToken.value, selectedGenre), setArtists)
+
+        //Make api call to spotify for songs of user selected genre
+        loadSongs(storedToken.value, selectedGenre)
+          .then((songList) => {
+            //Parse songs, set them into state variable
+            let tempSongList = songList.map(song => destructureSong(song))
+            setSongs(tempSongList)
+            return(tempSongList)
+          })
+          .then((tempSongList) => {
+            //take the artists from the list of songs, store them in state variable.
+            let artistsOnly = new Set(tempSongList.map(song => song.artist))
+            console.log(artistsOnly)
+            setArtists(Array.from(artistsOnly))
+          })
+
+        // setArtists(parseArtists(songsTemp))
+
+        // export const parseSongs = (songListPromise, setSongs) => {
+//     return songListPromise.then((songList) => {
+//         let parsedList = songList.map(song => destructureSong(song))
+//         setSongs(parsedList)
+
+        // parseSongs(loadSongs(storedToken.value, selectedGenre), setSongs)
+        // parseArtists(loadArtists(storedToken.value, selectedGenre), setArtists)
         return
       }
     }
