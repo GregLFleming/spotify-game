@@ -33,9 +33,3 @@
     "react-reveal": "^1.2.2",
     "react-router-dom": "^5.1.2",
     "reactjs-popup": "^2.0.5",
-    "recoil": "^0.7.6",
-    "regenerator-runtime": "^0.13.9",
-    "styled-components": "^5.0.0",
-    "whatwg-fetch": "^3.0.0"
-  }
-}
