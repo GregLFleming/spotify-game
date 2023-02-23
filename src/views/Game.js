@@ -12,7 +12,7 @@ import Flash from 'react-reveal/Flash';
 import Jump from 'react-reveal/Jump';
 import Shake from 'react-reveal/Shake';
 import Tada from 'react-reveal/Tada';
-import { useRecoilState } from 'recoil' //needed to manage state with recoil
+import { useRecoilState, useRecoilValue } from 'recoil' //needed to manage state with recoil
 import { maxLivesAtom, gameOverAtom, popupAtom, qtySongsAtom, gameStatusAtom, artistChoicesAtom, songsToChooseFromAtom, qtyArtistsChosenAtom, songToGuessAtom, livesRemainingAtom, roundNumberAtom, secondsRemainingAtom, artistsToChooseFromAtom, timeLimitAtom, timeRemainingAtom } from '../recoil/atoms'
 import fetchFromSpotify from '../services/api.js'
 import { loadArtists, parseArtists } from '../services/SpotifyQuery.js'
@@ -40,32 +40,29 @@ align-items:center;
 justify-content:center;
 `
 
-const ResultScreen = styled.div`{}
-border: 2px solid black;
-position: absolute;
-width: 40vw;
-height: 60vh;
-// background: black;
-`
 const randomizer = (arr, count) => arr.sort(() => Math.random() - 0.5).slice(0, count);
 
 
 const Game = () => {
   //---------Recoil State Storage---------\\
+  //Game Mechanics
   const [livesRemaining, setLivesRemaining] = useRecoilState(livesRemainingAtom)
   const [roundNumber, setRoundNumber] = useRecoilState(roundNumberAtom)
   const [timeRemaining, setTimeRemaining] = useRecoilState(timeRemainingAtom)
-  const [timeLimit, setTimeLimit] = useRecoilState(timeLimitAtom)
-  const [qtyArtistsChosen, setQtyArtistsChosen] = useRecoilState(qtyArtistsChosenAtom)
   const [songToGuess, setSongToGuess] = useRecoilState(songToGuessAtom)
-  const [chosenArtists, setChosenArtists] = useRecoilState(artistsToChooseFromAtom)
-  const [songsToChooseFrom, setSongsToChooseFrom] = useRecoilState(songsToChooseFromAtom)
-  const [artistChoices, setArtistChoices] = useRecoilState(artistChoicesAtom)
-  const [qtySongs, setQtySongs] = useRecoilState(qtySongsAtom)
 
+  //Internal state
+  const songsToChooseFrom = useRecoilValue(songsToChooseFromAtom)
+  const artistsToChooseFrom = useRecoilValue(artistsToChooseFromAtom) //list of all artists in genre
+  const [artistChoices, setArtistChoices] = useRecoilState(artistChoicesAtom) //options presented to user
   const [popup, setPopup] = useRecoilState(popupAtom)
   const [gameOver, setGameOver] = useRecoilState(gameOverAtom);
-  const [maxLives, setMaxLives] = useRecoilState(maxLivesAtom);
+  
+  //Settings Selected By User
+  const timeLimit = useRecoilValue(timeLimitAtom)
+  const qtyArtistsChosen = useRecoilValue(qtyArtistsChosenAtom)
+  const qtySongs = useRecoilValue(qtySongsAtom)
+  const maxLives = useRecoilValue(maxLivesAtom);
 
   useEffect(() => {
     const artists = JSON.parse(localStorage.getItem('artists'))
@@ -73,6 +70,7 @@ const Game = () => {
       setArtists(artists.items.name)
     }
   })
+  
   function playSong(url) {
     const sound = new Howl({
       src: [url],
@@ -89,24 +87,22 @@ const Game = () => {
   }
 
   //---------Game Logic---------\\
+  //create a new timer
+  const timer = useRef(createCountdownTimer(timeLimit, setTimeRemaining));
 
-  //reset timer on first load
-
+  //reset game state
   const resetGame = () => {
     const songToGuessIntermediate = getRandomSong(songsToChooseFrom)
     setRoundNumber(1);
     setLivesRemaining(maxLives);
     setSongToGuess(songToGuessIntermediate)
-    setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists, songToGuessIntermediate));
+    setArtistChoices(selectNArtists(qtyArtistsChosen, artistsToChooseFrom, songToGuessIntermediate));
     setGameOver(false);
     setPopup('');
     timer.current.stop();
     timer.current.reset();
   }
 
-  //create a new timer
-  const timer = useRef(createCountdownTimer(timeLimit, setTimeRemaining));
-  
   //Start new rounds when roundNumber is changed
   const startNewRound = () => {
     timer.current.reset()
@@ -114,14 +110,14 @@ const Game = () => {
     const songToGuessIntermediate = getRandomSong(songsToChooseFrom)
     setRoundNumber(parseInt(roundNumber) + 1)
     setSongToGuess(songToGuessIntermediate)
-    setArtistChoices(selectNArtists(qtyArtistsChosen, chosenArtists, songToGuessIntermediate))
+    setArtistChoices(selectNArtists(qtyArtistsChosen, artistsToChooseFrom, songToGuessIntermediate))
     let buttons = document.getElementsByClassName('artistChoice')
       for(let button of buttons){
         button.disabled = false;
       }
   }
 
-  //monitor game state
+  //Check for end game conditions
   useEffect(() => {
     if (livesRemaining < 1 || timeRemaining < 1) {
       console.log("Lose condition reached")
@@ -135,7 +131,7 @@ const Game = () => {
 
   }, [timeRemaining, livesRemaining, roundNumber]);
 
-  //check user answer
+  //Check user's answer
   const handleUserGuess = (userGuess) => {
     console.log(userGuess)
     userGuess.disabled = true;
@@ -146,6 +142,8 @@ const Game = () => {
       setLivesRemaining(parseInt(livesRemaining) - 1)
     }
   }
+
+  //Controls for howler
   useEffect(() => {
     const volumeSlider = document.getElementById('volume');
     console.log(volumeSlider)
