@@ -32,7 +32,7 @@ const Home = () => {
   const [selectedGenre, setSelectedGenre] = useRecoilState(genreSelectedAtom)
   const [maxLives, setMaxLives] = useRecoilState(maxLivesAtom);
   const [qtyArtistsChosen, setQtyArtistsChosen] = useRecoilState(qtyArtistsChosenAtom)
-  const [qtySongs, setQtySongs] = useRecoilState(qtySongsAtom )
+  const [qtySongs, setQtySongs] = useRecoilState(qtySongsAtom)
 
   //Game State
   const [songs, setSongs] = useRecoilState(songsToChooseFromAtom)
@@ -74,6 +74,8 @@ const Home = () => {
       setAuthLoading(false)
       setToken(newToken.value)
       loadGenres(newToken.value, setConfigLoading, setGenres)
+      parseSongs(loadSongs(storedToken.value, selectedGenre), setSongs)
+      parseArtists(loadArtists(storedToken.value, selectedGenre), setArtists)
     })
   }, [selectedGenre])
 
@@ -96,55 +98,60 @@ const Home = () => {
   return (
     <div>
       <Container>
-          <img src={records} alt='Picture of Record'/>
-        
-          <Header><Roll right>Welcome To Whos-Who</Roll></Header>
+        <img src={records} alt='Picture of Record' />
+
+        <Header><Roll right>Welcome To Whos-Who</Roll></Header>
         <Flip left>
-        <Card>
-          <Select
-            value = {selectedGenre}
-            onChange={event => setSelectedGenre(event.target.value)}
-          >
-            <option disabled = {true}>Select Your Genre</option>
+          <Card>
+            <Select
+              value={selectedGenre}
+              onChange={event => setSelectedGenre(event.target.value)}
+            >
+              <option key="0" value="">Select Your Genre</option>
 
-            {genres.map(genre => (
-              <option key={genre} value={genre}>
-                {genre}
-              </option>
-            ))}
-          </Select>
+              {genres.map(genre => (
+                <option key={genre} value={genre}>
+                  {genre}
+                </option>
+              ))}
+            </Select>
 
-          <Select
-            value={qtyArtistsChosen}
-            onChange={event => setQtyArtistsChosen(event.target.value)}
-          >
-            <option disabled = {true}>Artist Choices</option>
-            <option>2</option>
-            <option>3</option>
-            <option>4</option>
-          </Select>
-          <Select 
-          value={qtySongs}
-          onChange={event => setQtySongs(event.target.value)}
-          >
-            <option disabled = {true}> Number of Songs </option>
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-          </Select>
-          <Select 
-          value={maxLives}
-          onChange={event => setMaxLives(event.target.value)}
-          >
-            <option disabled = {true}>How many lives?</option>
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-            <option>4</option>
-            <option>5</option>
-          </Select>
-          <NavLink to="/game" style={{textDecoration: 'none'}}><Button style={{backgroundColor: '#49A078'}} onClick = {prepareNewGame}>START</Button></NavLink>
-        </Card>
+            <Select
+              value={qtyArtistsChosen}
+              onChange={event => setQtyArtistsChosen(event.target.value)}
+            >
+              <option key="0" value="0">Number of Artist Choices</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+            </Select>
+            <Select
+              value={qtySongs}
+              onChange={event => setQtySongs(event.target.value)}
+            >
+              <option key="0" value="0"> Number of Songs </option>
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+            </Select>
+            <Select
+              value={maxLives}
+              onChange={event => setMaxLives(event.target.value)}
+            >
+              <option key="0" value="0">How many lives?</option>
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+            </Select>
+            {selectedGenre !== "" && qtyArtistsChosen !==0 && qtySongs !== 0 && maxLives !== 0 ? (
+              <NavLink to="/game" style={{ textDecoration: 'none' }}><Button style={{ backgroundColor: '#49A078' }} onClick={prepareNewGame}>START</Button></NavLink>
+            ) : (
+              <NavLink to="/game" style={{ textDecoration: 'none' }}><Button disabled={true} style={{ backgroundColor: '#49A078' }} onClick={prepareNewGame}>START</Button></NavLink>
+            )}
+            
+          </Card>
         </Flip>
       </Container>
     </div>
