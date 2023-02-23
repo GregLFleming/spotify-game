@@ -63,3 +63,18 @@ export const createCountdownTimer = (maxTime, setTimeRemaining) => {
   }
   return timer;
 }
+
+export const disableElementsByClassName = (elementClassName) => {
+  let buttons = document.getElementsByClassName(elementClassName)
+      for(let button of buttons){
+        button.disabled = true;
+      }
+    }
+
+export const enableElementsByClassName = (elementClassName) => {
+  let buttons = document.getElementsByClassName(elementClassName)
+      for(let button of buttons){
+        console.log(button)
+        button.disabled = false;
+      }
+    }
