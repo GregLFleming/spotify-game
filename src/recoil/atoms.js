@@ -41,12 +41,12 @@ export const genreSelectedAtom = atom({
 
 export const qtyArtistsChosenAtom = atom({
     key: 'qtyArtistsChosen',
-    default: 0
+    default: 2
 });
 
 export const qtySongsAtom = atom({
     key: 'qtySongs',
-    default: 0
+    default: 1
 });
 
 export const timeLimitAtom = atom({

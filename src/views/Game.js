@@ -6,7 +6,7 @@ import Card from '../components/Card.jsx'
 import Container from '../components/Container.jsx'
 import Header from '../components/Header.jsx'
 import styled from "styled-components"
-import { createCountdownTimer, displayNumArtists, playSong, selectNArtists, getRandomSong } from '../services/helpers';
+import { disableElementsByClassName, enableElementsByClassName, createCountdownTimer, displayNumArtists, playSong, selectNArtists, getRandomSong } from '../services/helpers';
 import Spin from 'react-reveal/Spin';
 import Flash from 'react-reveal/Flash';
 import Jump from 'react-reveal/Jump';
@@ -102,6 +102,7 @@ const Game = () => {
 
   const handlePlaySong = () => {
     timer.current.start()
+    enableElementsByClassName('artistChoice')
     document.getElementById("gameButton").disabled = true;
     playSong(songToGuess.url)
   }
@@ -110,15 +111,20 @@ const Game = () => {
   //create a new timer only if one does nto alredy exist
   const timer = timer ? timer : useRef(createCountdownTimer(timeLimit, setTimeRemaining));
 
+  //Prepare state for a new game
+
+  useEffect(() => {
+    resetGame();
+  },[])
+
+  useEffect(() => {
+    disableElementsByClassName('artistChoice');
+  },[artistChoices])
+
   //reset game state
   const resetGame = () => {
-    //enable all buttons
     document.getElementById("gameButton").disabled = false;
-    let buttons = document.getElementsByClassName('artistChoice')
-      for(let button of buttons){
-        button.disabled = false;
-      }
-
+    disableElementsByClassName('artistChoice')
     const songToGuessIntermediate = getRandomSong(songsToChooseFrom)
     setRoundNumber(1);
     setLivesRemaining(maxLives);
@@ -134,10 +140,7 @@ const Game = () => {
   const startNewRound = () => {
     //reset all buttons
     document.getElementById("gameButton").disabled = false;
-    let buttons = document.getElementsByClassName('artistChoice')
-      for(let button of buttons){
-        button.disabled = false;
-      }
+    disableElementsByClassName('artistChoice')
     
     timer.current.stop()
     timer.current.reset()
@@ -154,7 +157,9 @@ const Game = () => {
     if (livesRemaining < 1 || timeRemaining < 1) {
       timer.current.stop()
       timer.current.reset()
-      sound.stop()
+      if(sound){
+        sound.stop()
+      }
       setPopup("Oops, you dropped that one.")
       setGameOver(true)
     }
@@ -209,8 +214,8 @@ const Game = () => {
             <label>Volume</label>
           </div>
           <span style={{ display: 'flex', flexDirection: 'row' }}>
-            <Button id='gameButton'  style={{ marginRight: '220px', cursor: 'default' }}>Lives Remaining: {livesRemaining}</Button>
-            <Button id='gameButton'  style={{ cursor: 'default' }}>Time remaining: {timeRemaining}</Button>
+            <Button id='gameButton' style={{ marginRight: '220px', cursor: 'default' }}>Lives Remaining: {livesRemaining}</Button>
+            <Button id='gameButton' style={{ cursor: 'default' }}>Time remaining: {timeRemaining}</Button>
           </span>
           {gameOver? 
             <ResultPopup className='ResultPopup' style={{backgroundImage: `url(${cassette})`

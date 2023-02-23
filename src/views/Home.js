@@ -100,17 +100,6 @@ const Home = () => {
     })
   }, [selectedGenre])
 
-  //Initialize the state for a new game
-  const prepareNewGame = () => {
-    const songToGuessIntermediate = getRandomSong(songs)
-    setRoundNumber(1);
-    setLivesRemaining(maxLives);
-    setSongToGuess(songToGuessIntermediate)
-    setArtistChoices(selectNArtists(qtyArtistsChosen, artists, songToGuessIntermediate));
-    setGameOver(false);
-    setPopup('');
-  }
-
   //if (authLoading || configLoading) {
   //  return <div>Loading...</div>
   //}
@@ -167,9 +156,9 @@ const Home = () => {
               <option>5</option>
             </Select>
             {selectedGenre !== "" && qtyArtistsChosen !==0 && qtySongs !== 0 && maxLives !== 0 ? (
-              <NavLink to="/game" style={{ textDecoration: 'none' }}><Button style={{ backgroundColor: '#49A078' }} onClick={prepareNewGame}>START</Button></NavLink>
+              <NavLink to="/game" style={{ textDecoration: 'none' }}><Button style={{ backgroundColor: '#49A078' }}>START</Button></NavLink>
             ) : (
-              <NavLink to="/game" style={{ textDecoration: 'none' }}><Button disabled={true} style={{ backgroundColor: '#49A078' }} onClick={prepareNewGame}>START</Button></NavLink>
+              <NavLink to="/game" style={{ textDecoration: 'none' }}><Button disabled={true} style={{ backgroundColor: '#49A078' }}>START</Button></NavLink>
             )}
             
           </Card>
