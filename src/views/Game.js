@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect} from 'react'
+import React, { useRef, useEffect,useState} from 'react'
 
 import Button from '../components/Button.jsx'
 import Card from '../components/Card.jsx'
@@ -65,21 +65,32 @@ const Game = () => {
   const qtySongs = useRecoilValue(qtySongsAtom)
   const maxLives = useRecoilValue(maxLivesAtom);
 
-  // useEffect(() => {
-  //   const artists = JSON.parse(localStorage.getItem('artists'))
-  //   if (artists) {
-  //     setArtists(artists.items.name)
-  //   }
-  // })
+  const [sound, setSound] = useState(null);
   
   function playSong(url) {
-    const sound = new Howl({
+    setSound(new Howl({
       src: [url],
       preload: true,
       html5: true,
-    })
-    sound.play()
+    }));
   }
+
+  function handlePauseSong() {
+    if (sound) {
+      sound.pause();
+    }
+  }
+
+  useEffect(() => {
+    if (sound) {
+      sound.play();
+      return () => {
+        sound.stop();
+      };
+    }
+  }, [sound]);
+
+
 
   const handlePlaySong = () => {
     timer.current.start()
@@ -136,6 +147,7 @@ const Game = () => {
     console.log(userGuess)
     userGuess.disabled = true;
     if (userGuess.innerHTML === songToGuess.artist) {
+      handlePauseSong();
       startNewRound();
     }
     else {
