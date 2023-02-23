@@ -90,9 +90,9 @@ const Home = () => {
     setPopup('');
   }
 
-  if (authLoading || configLoading) {
-    return <div>Loading...</div>
-  }
+  //if (authLoading || configLoading) {
+  //  return <div>Loading...</div>
+  //}
 
   //---------JSX---------\\
   return (
