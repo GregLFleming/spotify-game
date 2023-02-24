@@ -74,7 +74,6 @@ export const disableElementsByClassName = (elementClassName) => {
 export const enableElementsByClassName = (elementClassName) => {
   let buttons = document.getElementsByClassName(elementClassName)
       for(let button of buttons){
-        console.log(button)
         button.disabled = false;
       }
     }

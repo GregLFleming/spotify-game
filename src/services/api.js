@@ -47,6 +47,7 @@ export const request = (url, options) => {
   return fetch(url, options)
     .then(checkStatus)
     .then(parseJSON)
+    .catch((e) => console.log(e))
 }
 
 const fetchFromSpotify = ({ token, endpoint, params }) => {

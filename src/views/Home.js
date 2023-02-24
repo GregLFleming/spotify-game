@@ -6,13 +6,12 @@ import Card from '../components/Card.jsx'
 import Container from '../components/Container.jsx'
 import Button from '../components/Button.jsx'
 import Select from '../components/Select.jsx'
-import { selectNArtists, getRandomSong } from '../services/helpers';
 import homeStyles from '../styles/homeStyles.css';
 import records from '../assets/records.jpg';
 import { useRecoilState, useSetRecoilState } from 'recoil'
 import { loadArtists, loadGenres, loadSongs, parseArtists, parseSongs, destructureSong } from '../services/SpotifyQuery.js'
 import { request } from '../services/api'
-import { maxLivesAtom, roundNumberAtom, popupAtom, gameOverAtom, songToGuessAtom, artistChoicesAtom, artistsToChooseFromAtom, songsToChooseFromAtom, timeLimitAtom, timeRemainingAtom, qtySongsAtom, qtyArtistsChosenAtom, genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom, livesRemainingAtom } from '../recoil/atoms' //individual value you need access to
+import { maxLivesAtom, artistsToChooseFromAtom, songsToChooseFromAtom, qtySongsAtom, qtyArtistsChosenAtom, genreSelectedAtom, genresToChooseFromAtom, tokenAuthorizationLoadingAtom, configLoadingAtom, tokenAtom } from '../recoil/atoms' //individual value you need access to
 import { NavLink } from 'react-router-dom'
 
 const AUTH_ENDPOINT =
@@ -37,12 +36,6 @@ const Home = () => {
   //Game State
   const [songs, setSongs] = useRecoilState(songsToChooseFromAtom)
   const [artists, setArtists] = useRecoilState(artistsToChooseFromAtom)
-  const setArtistChoices = useSetRecoilState(artistChoicesAtom)
-  const setSongToGuess = useSetRecoilState(songToGuessAtom)
-  const setRoundNumber = useSetRecoilState(roundNumberAtom)
-  const setPopup = useSetRecoilState(popupAtom)
-  const setGameOver = useSetRecoilState(gameOverAtom);
-  const setLivesRemaining = useSetRecoilState(livesRemainingAtom)
 
   //---------Initial Loading---------\\
   useEffect(() => {
@@ -51,7 +44,7 @@ const Home = () => {
     if (storedTokenString) {
       const storedToken = JSON.parse(storedTokenString)
       if (storedToken.expiration > Date.now()) {
-        console.log('Token found in localstorage')
+        // console.log('Token found in localstorage')
         setAuthLoading(false)
         setToken(storedToken.value)
 
@@ -69,7 +62,7 @@ const Home = () => {
           .then((tempSongList) => {
             //take the artists from the list of songs, store them in state variable.
             let artistsOnly = new Set(tempSongList.map(song => song.artist))
-            console.log(artistsOnly)
+            // console.log(artistsOnly)
             setArtists(Array.from(artistsOnly))
           })
 
@@ -85,7 +78,7 @@ const Home = () => {
         return
       }
     }
-    console.log('Sending request to AWS endpoint')
+    // console.log('Sending request to AWS endpoint')
     request(AUTH_ENDPOINT).then(({ access_token, expires_in }) => {
       const newToken = {
         value: access_token,
@@ -108,7 +101,7 @@ const Home = () => {
   return (
     <div>
       <Container>
-        <img src={records} alt='Picture of Record' />
+        <img style={{maxWidth: '100%', height: '100vh' }} src={records} alt='Picture of Record' />
 
         <Header><Roll right>Welcome To Whos-Who</Roll></Header>
         <Flip left>

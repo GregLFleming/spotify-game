@@ -69,7 +69,6 @@ const Game = () => {
   //Controls for howler
   useEffect(() => {
     const volumeSlider = document.getElementById('volume');
-    console.log(volumeSlider)
     volumeSlider.addEventListener('input', function () {
       const volume = parseFloat(this.value) / 12.0;
       Howler.volume(volume);
@@ -174,7 +173,6 @@ const Game = () => {
 
   //Check user's answer
   const handleUserGuess = (userGuess) => {
-    console.log(userGuess)
     userGuess.disabled = true;
     if (userGuess.innerHTML === songToGuess.artist) {
       handlePauseSong();
@@ -190,7 +188,7 @@ const Game = () => {
   return (
     <div>
       <Container>
-        <img src={guitarist} alt='Picture of guitarist'/>
+        <img style={{maxWidth: '100%', height: '100vh' }}src={guitarist} alt='Picture of guitarist'/>
         <Header><Spin>{`Round ${roundNumber}`}</Spin></Header>
             {
               wrong === true ? <h2 className='wrongChoice'><Shake>Wrong Choice, Guess again!</Shake></h2> : <span></span>
@@ -217,8 +215,7 @@ const Game = () => {
             <Button id='gameButton' style={{ cursor: 'default' }}>Time remaining: {timeRemaining}</Button>
           </span>
           {gameOver? 
-            <ResultPopup className='ResultPopup' style={{backgroundImage: `url(${cassette})`
-          }}>
+            <ResultPopup className='ResultPopup' style={{backgroundImage: `url(${cassette})`}}>
               <h2><Shake>{popup}</Shake></h2> <br />
               <span style={{ display: "flex" }}>
                 <NavLink onClick = {resetGame} style={{textDecoration: 'none'}} to = "/"><Tada><Button id='popupButton'  style={{ marginRight: '50px', textDecoration: 'none' }}>Return to Menu</Button></Tada></NavLink>

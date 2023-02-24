@@ -26,8 +26,8 @@ export const loadSongs = async (t, genre) => {
         token: t,
         endpoint: `search?q=${genre}&type=track&limit=50`
     })
-    console.log("This is the genre response:")
-    console.log(response)
+    // console.log("This is the genre response:")
+    // console.log(response)
     return response.tracks.items
 }
 
@@ -53,8 +53,8 @@ export const loadArtists = async (t, genre) => {
         token: t,
         endpoint: `search?q=genre%3A${genre}&type=artist`
     })
-    console.log("This is the artist response:")
-    console.log(response)
+    // console.log("This is the artist response:")
+    // console.log(response)
     return response.artists.items
 }
 
